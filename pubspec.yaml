@@ -35,8 +35,28 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
+
+  #for using google fonts
   google_fonts: ^6.2.1
+
+  #for responsive ui components
   flutter_screenutil: ^5.9.3
+
+  #for showing total steps to complete a task
+  step_progress_indicator: ^1.0.2
+
+  #state management tool
+  get: ^4.6.6
+
+  #date formatter
+  intl: ^0.19.0
+  salomon_bottom_bar: ^3.3.2
+  lottie: ^3.1.2
+  expandable_page_view: ^1.0.17
+  dots_indicator: ^3.0.0
+  expandable: ^5.0.1
+  icons_plus: ^5.0.0
+
 
 dev_dependencies:
   flutter_test:

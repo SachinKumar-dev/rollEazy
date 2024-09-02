@@ -35,7 +35,8 @@ class LogInPage extends StatelessWidget {
                     TextSpan(
                         text: 'Rider',
                         style: TextStyle(
-                            fontWeight: FontWeight.w700, color: primaryColor)),
+                            fontWeight: FontWeight.w700,
+                            color: headingColorText)),
                   ],
                 ),
               )),
@@ -62,7 +63,7 @@ class LogInPage extends StatelessWidget {
                     ],
                   ),
                   child: TextField(
-                    cursorColor: primaryColor,
+                    cursorColor: newtestColor,
                     decoration: InputDecoration(
                       hintText: "Enter your email",
                       hintStyle: GoogleFonts.poppins(
@@ -106,11 +107,11 @@ class LogInPage extends StatelessWidget {
                   ),
                   child: TextField(
                     obscureText: true,
-                    cursorColor: primaryColor,
+                    cursorColor: newtestColor,
                     decoration: InputDecoration(
                       suffixIcon: Icon(
                         Icons.visibility_off,
-                        color: primaryColor,
+                        color: headingColorText,
                       ),
                       hintText: "Enter your password",
                       hintStyle: GoogleFonts.poppins(
@@ -136,21 +137,23 @@ class LogInPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     styleText(
-                        text: "Forgot Password ?", txtColor: txtGreyShade),
+                        text: "Forgot Password ?",
+                        txtColor: txtGreyShade,
+                        size: 18.sp),
                   ],
                 ),
               ),
               Card(
                 elevation: 1,
                 child: Container(
-                  height: height(context: context, value: 0.067),
+                  height: height(context: context, value: 0.063),
                   width: width(context: context, value: 0.9),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.r),
+                    borderRadius: BorderRadius.circular(8.r),
                     boxShadow: [
                       BoxShadow(
-                        color: primaryColor.withOpacity(0.5),
+                        color: testColor.withOpacity(0.5),
                         spreadRadius: -25, // How much the shadow spreads
                         blurRadius: 10, // Softness of the shadow
                         offset: const Offset(-5, 27),
@@ -160,7 +163,7 @@ class LogInPage extends StatelessWidget {
                   child: ElevatedButton(
                       style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(primaryColor),
+                              MaterialStateProperty.all(headingColorText),
                           shape:
                               MaterialStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
@@ -171,7 +174,8 @@ class LogInPage extends StatelessWidget {
                       child: styleText(
                           text: "Sign in",
                           txtColor: Colors.white,
-                          size: textSize(value: 18))),
+                          size: textSize(value: 15.sp),
+                          weight: FontWeight.w500)),
                 ),
               ),
               SizedBox(

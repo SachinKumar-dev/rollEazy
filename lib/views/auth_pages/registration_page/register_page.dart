@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
+import 'package:roll_eazy/views/homepage/home_screen.dart';
+import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -20,25 +22,26 @@ class RegisterPage extends StatelessWidget {
               ),
               Center(
                 child: styleText(
-                    text: "Register Yourself",
+                    text: "Register Yourself !",
                     size: textSize(value: 26),
                     txtColor: txtGreyShade),
               ),
               Center(
                   child: RichText(
-                    text: TextSpan(
-                      text: "Super ",
-                      style: GoogleFonts.poppins(
-                          fontSize: textSize(value: 18),
-                          color: Colors.grey.shade700),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: 'Rider',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700, color: primaryColor)),
-                      ],
-                    ),
-                  )),
+                text: TextSpan(
+                  text: "Super ",
+                  style: GoogleFonts.poppins(
+                      fontSize: textSize(value: 18),
+                      color: Colors.grey.shade700),
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: 'Rider',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: headingColorText)),
+                  ],
+                ),
+              )),
               SizedBox(
                 height: height(context: context, value: 0.05),
               ),
@@ -62,7 +65,7 @@ class RegisterPage extends StatelessWidget {
                     ],
                   ),
                   child: TextField(
-                    cursorColor: primaryColor,
+                    cursorColor: newtestColor,
                     decoration: InputDecoration(
                       hintText: "Enter your email",
                       hintStyle: GoogleFonts.poppins(
@@ -70,12 +73,12 @@ class RegisterPage extends StatelessWidget {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.r),
                         borderSide:
-                        const BorderSide(color: Colors.grey, width: 1),
+                            const BorderSide(color: Colors.grey, width: 1),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.r),
                         borderSide:
-                        const BorderSide(color: Colors.grey, width: 2),
+                            const BorderSide(color: Colors.grey, width: 2),
                       ),
                     ),
                   ),
@@ -84,25 +87,28 @@ class RegisterPage extends StatelessWidget {
               SizedBox(
                 height: height(context: context, value: 0.03),
               ),
-              txtField(context: context, color: primaryColor, txt: "Password"),
+              txtField(context: context, color: newtestColor, txt: "Password"),
               SizedBox(
                 height: height(context: context, value: 0.03),
               ),
-             txtField(context: context, color: primaryColor, txt: "Confirm Password"),
+              txtField(
+                  context: context,
+                  color: newtestColor,
+                  txt: "Confirm Password"),
               SizedBox(
                 height: height(context: context, value: 0.03),
               ),
               Card(
                 elevation: 1,
                 child: Container(
-                  height: height(context: context, value: 0.067),
+                  height: height(context: context, value: 0.063),
                   width: width(context: context, value: 0.9),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10.r),
                     boxShadow: [
                       BoxShadow(
-                        color: primaryColor.withOpacity(0.5),
+                        color: testColor.withOpacity(0.5),
                         spreadRadius: -25, // How much the shadow spreads
                         blurRadius: 10, // Softness of the shadow
                         offset: const Offset(-5, 27),
@@ -112,20 +118,40 @@ class RegisterPage extends StatelessWidget {
                   child: ElevatedButton(
                       style: ButtonStyle(
                           backgroundColor:
-                          MaterialStateProperty.all(primaryColor),
+                              MaterialStateProperty.all(headingColorText),
                           shape:
-                          MaterialStateProperty.all<RoundedRectangleBorder>(
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0.r),
                             ),
                           )),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomePage()));
+                      },
                       child: styleText(
                           text: "Sign up",
                           txtColor: Colors.white,
-                          size: textSize(value: 18))),
+                          size: textSize(value: 15.sp),
+                          weight: FontWeight.w500)),
                 ),
               ),
+              SizedBox(
+                height: height(context: context, value: 0.17),
+              ),
+              Padding(
+                padding:
+                    EdgeInsets.all(MediaQuery.of(context).size.width * 0.06),
+                child: StepProgressIndicator(
+                  roundedEdges: Radius.circular(20.r),
+                  totalSteps: 2,
+                  currentStep: 2,
+                  selectedColor: newtestColor,
+                  unselectedColor: Colors.grey,
+                ),
+              )
             ],
           ),
         ),
