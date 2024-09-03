@@ -7,7 +7,6 @@ import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/views/homepage/home_screen.dart';
 import 'package:roll_eazy/views/homepage/main_screen.dart';
 import 'package:roll_eazy/views/profile_page/profile_page.dart';
-import 'package:roll_eazy/views/profile_page/profile_view.dart';
 import 'package:roll_eazy/views/splash_screen/splash_screen.dart';
 
 void main() {
