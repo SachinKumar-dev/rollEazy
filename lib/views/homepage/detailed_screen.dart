@@ -1,6 +1,7 @@
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
@@ -48,29 +49,40 @@ class _MainScreenState extends State<MainScreen>
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 children: [
                   _buildListTile(
-                    icon: Icons.car_repair_rounded,
-                    title: styleText(
-                        text: "Vehicle Condition",
-                        txtColor: txtGreyShade,
-                        size: 16.sp),
-                  ),
-                  const Divider(),
-                  _buildListTile(
-                    icon: Icons.location_on_outlined,
-                    title: styleText(
-                        text: "Non-Functional Parts",
-                        txtColor: txtGreyShade,
-                        size: 16.sp),
-                  ),
-                  const Divider(),
-                  _buildListTile(
-                    icon: Icons.receipt_outlined,
+                    path: "assets/logos/road.png",
                     title: styleText(
                         text: "Current KM",
                         txtColor: txtGreyShade,
                         size: 16.sp),
                   ),
                   const Divider(),
+                  _buildListTile(
+                    path: "assets/logos/deposit.png",
+                    title: styleText(
+                        text: "Deposit", txtColor: txtGreyShade, size: 16.sp),
+                  ),
+                  const Divider(),
+                  _buildListTile(
+                    path: "assets/logos/save-money.png",
+                    title: styleText(
+                        text: "Extra Charges",
+                        txtColor: txtGreyShade,
+                        size: 16.sp),
+                  ),
+                  const Divider(),
+                  _buildListTile(
+                    path: "assets/logos/rating.png",
+                    title: styleText(
+                        text: "Reviews", txtColor: txtGreyShade, size: 16.sp),
+                  ),
+                  const Divider(),
+                  _buildListTile(
+                    path: "assets/logos/hanging.png",
+                    title: styleText(
+                        text: "Non-Functional Parts",
+                        txtColor: txtGreyShade,
+                        size: 16.sp),
+                  ),
                 ],
               ),
             ),
@@ -80,7 +92,7 @@ class _MainScreenState extends State<MainScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Checkbox(
-                    activeColor: headingColorText,
+                    activeColor: greenTextColor,
                     value: _isChecked,
                     onChanged: (bool? value) {
                       setState(() {
@@ -88,18 +100,23 @@ class _MainScreenState extends State<MainScreen>
                       });
                     },
                   ),
-                  styleText(
-                      text: "I agree to terms and conditions",
-                      size: 15.5.sp,
-                      txtColor: txtGreyShade)
+                  GestureDetector(
+                    onTap: () {
+                      //logic for opening and reading file of T & C
+                    },
+                    child: styleText(
+                        text: "I agree to terms and conditions",
+                        size: 15.5.sp,
+                        txtColor: Colors.red),
+                  )
                 ],
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 16.h),
+              padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.h),
               child: ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(headingColorText),
+                  backgroundColor: MaterialStateProperty.all(greenTextColor),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0.r),
@@ -117,13 +134,11 @@ class _MainScreenState extends State<MainScreen>
     );
   }
 
-  Widget _buildListTile({required IconData icon, required Widget title}) {
+  Widget _buildListTile({required String path, required Widget title}) {
     return ListTile(
-      leading: Icon(
-        weight: 20,
-        icon,
-        color: newtestColor,
-        size: 17.sp,
+      leading: Image.asset(
+        path,
+        scale: 18.sp,
       ),
       title: title,
       trailing: Icon(
@@ -163,15 +178,6 @@ class _MainScreenState extends State<MainScreen>
                 ),
               ],
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12.r),
-              child: Center(
-                child: Image.asset(
-                  path,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
           ),
           Positioned(
             bottom: 7.h,
@@ -191,6 +197,18 @@ class _MainScreenState extends State<MainScreen>
               ),
             ),
           ),
+          Positioned(
+            bottom: 30.h,
+            left: 0,
+            right: 0,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: Image.asset(
+                path,
+                fit: BoxFit.cover,
+              ),
+            ),
+          )
         ],
       ),
     );

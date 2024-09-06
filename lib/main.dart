@@ -5,8 +5,9 @@ import 'package:get/get.dart';
 import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/views/homepage/home_screen.dart';
-import 'package:roll_eazy/views/homepage/main_screen.dart';
+import 'package:roll_eazy/views/homepage/detailed_screen.dart';
 import 'package:roll_eazy/views/profile_page/profile_page.dart';
+
 import 'package:roll_eazy/views/splash_screen/splash_screen.dart';
 
 void main() {
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: newtestColor),
+            colorScheme: ColorScheme.fromSeed(seedColor: greenTextColor),
             useMaterial3: true,
           ),
           home: const SplashScreen(),

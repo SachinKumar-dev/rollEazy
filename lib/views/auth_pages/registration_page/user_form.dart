@@ -28,6 +28,9 @@ class _UserFormState extends State<UserForm> {
             child: SafeArea(
               child: Column(
                 children: [
+                  SizedBox(
+                    height: height(context: context, value: 0.03),
+                  ),
                   Padding(
                     padding: EdgeInsets.only(
                         left: MediaQuery.of(context).size.width * 0.07,
@@ -36,90 +39,14 @@ class _UserFormState extends State<UserForm> {
                       children: [
                         styleText(
                             text: "User Form",
-                            txtColor: newtestColor,
+                            txtColor: greenTextColor,
                             size: 25.sp,
                             weight: FontWeight.w500),
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.all(
-                        MediaQuery.of(context).size.width * 0.06),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Container(
-                                height: height(context: context, value: 0.2),
-                                width: width(context: context, value: 0.5),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    border: Border.all(
-                                        width: 1.5, color: Colors.grey)),
-                                child: IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
-                                      Icons.camera_enhance_rounded,
-                                      color: newtestColor,
-                                    )),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  height: height(context: context, value: 0.04),
-                                  width: width(context: context, value: 0.5),
-                                  decoration: BoxDecoration(
-                                      color: newtestColor,
-                                      borderRadius: BorderRadius.circular(5.r)),
-                                  child: Center(
-                                      child: styleText(
-                                          text: "Profile Image", size: 15.sp)),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: width(context: context, value: 0.01),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Container(
-                                height: height(context: context, value: 0.2),
-                                width: width(context: context, value: 0.5),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    border: Border.all(
-                                      width: 1.5,
-                                      color: Colors.grey,
-                                    )),
-                                child: IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
-                                      Icons.camera_enhance_rounded,
-                                      color: newtestColor,
-                                    )),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  height: height(context: context, value: 0.04),
-                                  width: width(context: context, value: 0.5),
-                                  decoration: BoxDecoration(
-                                      color: newtestColor,
-                                      borderRadius: BorderRadius.circular(5.r)),
-                                  child: Center(
-                                      child: styleText(
-                                          text: "Cover Image", size: 15.sp)),
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                  SizedBox(
+                    height: height(context: context, value: 0.03),
                   ),
                   txtFormField(
                       context: context,
@@ -163,7 +90,7 @@ class _UserFormState extends State<UserForm> {
                               ),
                               child: TextField(
                                 controller: ctrl.dob,
-                                cursorColor: newtestColor,
+                                cursorColor: greenTextColor,
                                 decoration: InputDecoration(
                                   hintText: "DOB as per aadhar",
                                   hintStyle: GoogleFonts.poppins(
@@ -184,7 +111,7 @@ class _UserFormState extends State<UserForm> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
+                          padding: EdgeInsets.only(right: 16.0.w),
                           child: Card(
                             elevation: 1,
                             child: Container(
@@ -195,7 +122,7 @@ class _UserFormState extends State<UserForm> {
                                 borderRadius: BorderRadius.circular(8.r),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: newtestColor.withOpacity(0.5),
+                                    color: greenTextColor.withOpacity(0.5),
                                     spreadRadius: -25,
                                     // How much the shadow spreads
                                     blurRadius: 10,
@@ -208,7 +135,7 @@ class _UserFormState extends State<UserForm> {
                                   style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all(
-                                              newtestColor),
+                                              greenTextColor),
                                       shape: MaterialStateProperty.all<
                                           RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
@@ -242,7 +169,7 @@ class _UserFormState extends State<UserForm> {
                     ),
                   ),
                   SizedBox(
-                    height: height(context: context, value: 0.01),
+                    height: height(context: context, value: 0.02),
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,7 +177,10 @@ class _UserFormState extends State<UserForm> {
                     children: [
                       Column(
                         children: [
-                          dotText(context: context, text: "Gender"),
+                          dotText(
+                              context: context,
+                              text: "Gender",
+                              color: greenTextColor),
                           Padding(
                             padding: EdgeInsets.only(
                                 left: MediaQuery.of(context).size.width * 0.03),
@@ -260,6 +190,8 @@ class _UserFormState extends State<UserForm> {
                                 Row(
                                   children: [
                                     Radio<String>(
+                                        fillColor: MaterialStateProperty.all(
+                                            txtGreyShade),
                                         value: "Male",
                                         //its id
                                         groupValue: ctrl.gender,
@@ -279,6 +211,8 @@ class _UserFormState extends State<UserForm> {
                                 Row(
                                   children: [
                                     Radio<String>(
+                                        fillColor: MaterialStateProperty.all(
+                                            txtGreyShade),
                                         value: "Female",
                                         groupValue: ctrl.gender,
                                         onChanged: (String? value) {
@@ -296,6 +230,8 @@ class _UserFormState extends State<UserForm> {
                                 Row(
                                   children: [
                                     Radio<String>(
+                                        fillColor: MaterialStateProperty.all(
+                                            txtGreyShade),
                                         value: "Others",
                                         groupValue: ctrl.gender,
                                         onChanged: (String? value) {
@@ -318,7 +254,10 @@ class _UserFormState extends State<UserForm> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          dotText(context: context, text: "Driving License?"),
+                          dotText(
+                              context: context,
+                              text: "Driving License?",
+                              color: greenTextColor),
                           Padding(
                             padding: EdgeInsets.only(
                                 left: MediaQuery.of(context).size.width * 0.03),
@@ -327,6 +266,8 @@ class _UserFormState extends State<UserForm> {
                                 Row(
                                   children: [
                                     Radio<String>(
+                                        fillColor: MaterialStateProperty.all(
+                                            txtGreyShade),
                                         value: "Yes",
                                         //its id
                                         groupValue: ctrl.license,
@@ -346,6 +287,8 @@ class _UserFormState extends State<UserForm> {
                                 Row(
                                   children: [
                                     Radio<String>(
+                                        fillColor: MaterialStateProperty.all(
+                                            txtGreyShade),
                                         value: "No",
                                         groupValue: ctrl.license,
                                         onChanged: (String? value) {
@@ -367,6 +310,36 @@ class _UserFormState extends State<UserForm> {
                       )
                     ],
                   ),
+                  //add for profile image
+                  SizedBox(
+                    height: height(context: context, value: 0.03),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      dotText(
+                          context: context,
+                          text: "Profile Image",
+                          color: Colors.red),
+                      Padding(
+                        padding: EdgeInsets.only(right: 18.w),
+                        child: Container(
+                          height: height(context: context, value: 0.03),
+                          width: width(context: context, value: 0.18),
+                          decoration: BoxDecoration(
+                            color: greenTextColor,
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Center(
+                              child: styleText(text: "Select", size: 15.sp)),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: height(context: context, value: 0.1),
+                  ),
                   Card(
                     elevation: 1,
                     child: Container(
@@ -377,7 +350,7 @@ class _UserFormState extends State<UserForm> {
                         borderRadius: BorderRadius.circular(8.r),
                         boxShadow: [
                           BoxShadow(
-                            color: newtestColor.withOpacity(0.5),
+                            color: greenTextColor.withOpacity(0.5),
                             spreadRadius: -25, // How much the shadow spreads
                             blurRadius: 10, // Softness of the shadow
                             offset: const Offset(-5, 27),
@@ -387,7 +360,7 @@ class _UserFormState extends State<UserForm> {
                       child: ElevatedButton(
                           style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStateProperty.all(headingColorText),
+                                  MaterialStateProperty.all(greenTextColor),
                               shape: MaterialStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
@@ -395,18 +368,17 @@ class _UserFormState extends State<UserForm> {
                                 ),
                               )),
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const RegisterPage()));
+                            Get.to((const RegisterPage()),transition: Transition.rightToLeft);
+
                           },
                           child: styleText(
                               text: "Next Step",
                               txtColor: Colors.white,
-                              size: textSize(value: 15.sp))),
+                              size: textSize(value: 15.sp),
+                              weight: FontWeight.w500)),
                     ),
                   ),
+
                   Padding(
                     padding: EdgeInsets.all(
                         MediaQuery.of(context).size.width * 0.06),
@@ -414,7 +386,7 @@ class _UserFormState extends State<UserForm> {
                       roundedEdges: Radius.circular(20.r),
                       totalSteps: 2,
                       currentStep: 1,
-                      selectedColor: newtestColor,
+                      selectedColor: greenTextColor,
                       unselectedColor: Colors.grey,
                     ),
                   ),

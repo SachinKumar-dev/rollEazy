@@ -58,7 +58,11 @@ AppBar customAppBar(
 }
 
 //TextField for registration page
-Widget txtField({required context, required Color color, required String txt}) {
+Widget txtField(
+    {TextEditingController? value,
+    required context,
+    required Color color,
+    required String txt}) {
   return Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
     elevation: 1,
@@ -78,12 +82,13 @@ Widget txtField({required context, required Color color, required String txt}) {
         ],
       ),
       child: TextField(
+        controller: value,
         obscureText: true,
         cursorColor: color,
         decoration: InputDecoration(
           suffixIcon: Icon(
             Icons.visibility_off,
-            color: headingColorText,
+            color: greenTextColor,
           ),
           hintText: txt,
           hintStyle: GoogleFonts.poppins(fontSize: 15.sp, color: Colors.grey),
@@ -124,7 +129,7 @@ Widget txtFormField(
       ),
       child: TextField(
         controller: textType,
-        cursorColor: newtestColor,
+        cursorColor: greenTextColor,
         decoration: InputDecoration(
           hintText: text,
           hintStyle: GoogleFonts.poppins(fontSize: 15.sp, color: Colors.grey),
@@ -143,7 +148,7 @@ Widget txtFormField(
 }
 
 //dot Text
-Widget dotText({required context, required String text}) {
+Widget dotText({required context, required String text, required Color color}) {
   return Padding(
     padding: EdgeInsets.only(
       left: MediaQuery.of(context).size.width * 0.07,
@@ -154,13 +159,16 @@ Widget dotText({required context, required String text}) {
         Container(
           height: height(context: context, value: 0.02),
           width: height(context: context, value: 0.02),
-          decoration:
-              BoxDecoration(shape: BoxShape.circle, color: txtGreyShade),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
         Padding(
           padding:
               EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.04),
-          child: styleText(text: text, txtColor: txtGreyShade, size: 15.sp),
+          child: styleText(
+              text: text,
+              txtColor: txtGreyShade,
+              size: 15.sp,
+              weight: FontWeight.w500),
         ),
       ],
     ),

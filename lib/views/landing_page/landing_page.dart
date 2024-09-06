@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 import 'package:roll_eazy/views/auth_pages/login_page/login_page.dart';
+import 'package:roll_eazy/views/auth_pages/registration_page/register_page.dart';
 import 'package:roll_eazy/views/auth_pages/registration_page/user_form.dart';
 import 'package:roll_eazy/views/homepage/home_screen.dart';
 
@@ -59,10 +61,7 @@ class _LandingPageState extends State<LandingPage>
       if (_tapController.value >= 0.450 && !_isNavigating) {
         _isNavigating = true;
         // Navigate to the new page
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        ).then((value) {
+        Get.to((const HomePage()),transition: Transition.rightToLeft)?.then((value) {
           // Reset the animation and flag when coming back
           _tapController.reset();
           _isNavigating = false;
@@ -98,8 +97,8 @@ class _LandingPageState extends State<LandingPage>
                             child: child,
                           );
                         },
-                        child: Lottie.asset("assets/images/animation.json",
-                            width: 450)),
+                        child: Lottie.asset("assets/images/animation.json"
+                          )),
                   ),
                 ],
               ),
@@ -143,14 +142,11 @@ class _LandingPageState extends State<LandingPage>
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LogInPage()));
+                           Get.to((const LogInPage()),transition: Transition.rightToLeft);
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: newtestColor,
+                              color: greenTextColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(8.r),
                                 bottomLeft: Radius.circular(8.r),
@@ -170,10 +166,8 @@ class _LandingPageState extends State<LandingPage>
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const UserForm()));
+                            Get.to((const UserForm()),transition: Transition.rightToLeft);
+
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -216,7 +210,7 @@ class _LandingPageState extends State<LandingPage>
                           text: 'Log in',
                           style: TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: headingColorText)),
+                              color: greenTextColor)),
                     ],
                   ),
                 ),

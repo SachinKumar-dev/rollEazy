@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 
@@ -9,15 +12,12 @@ class LogInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return Scaffold(body: GetBuilder<UserFormController>(builder: (ctrl) {
+      return SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Image.asset(
-                "assets/logos/logo_login_rider.png",
-                scale: 12,
-              ),
+              Lottie.asset("assets/images/first.json",height: 180.h,repeat:false),
               Center(
                 child: styleText(
                     text: "Welcome Back !",
@@ -36,7 +36,7 @@ class LogInPage extends StatelessWidget {
                         text: 'Rider',
                         style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: headingColorText)),
+                            color: greenTextColor)),
                   ],
                 ),
               )),
@@ -63,7 +63,8 @@ class LogInPage extends StatelessWidget {
                     ],
                   ),
                   child: TextField(
-                    cursorColor: newtestColor,
+                    controller: ctrl.email,
+                    cursorColor: greenTextColor,
                     decoration: InputDecoration(
                       hintText: "Enter your email",
                       hintStyle: GoogleFonts.poppins(
@@ -106,12 +107,13 @@ class LogInPage extends StatelessWidget {
                     ],
                   ),
                   child: TextField(
+                    controller: ctrl.password,
                     obscureText: true,
-                    cursorColor: newtestColor,
+                    cursorColor: greenTextColor,
                     decoration: InputDecoration(
                       suffixIcon: Icon(
                         Icons.visibility_off,
-                        color: headingColorText,
+                        color: greenTextColor,
                       ),
                       hintText: "Enter your password",
                       hintStyle: GoogleFonts.poppins(
@@ -153,7 +155,7 @@ class LogInPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.r),
                     boxShadow: [
                       BoxShadow(
-                        color: testColor.withOpacity(0.5),
+                        color: greenTextColor.withOpacity(0.5),
                         spreadRadius: -25, // How much the shadow spreads
                         blurRadius: 10, // Softness of the shadow
                         offset: const Offset(-5, 27),
@@ -163,14 +165,16 @@ class LogInPage extends StatelessWidget {
                   child: ElevatedButton(
                       style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(headingColorText),
+                              MaterialStateProperty.all(greenTextColor),
                           shape:
                               MaterialStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0.r),
                             ),
                           )),
-                      onPressed: () {},
+                      onPressed: () {
+                        ctrl.loginUser();
+                      },
                       child: styleText(
                           text: "Sign in",
                           txtColor: Colors.white,
@@ -181,18 +185,15 @@ class LogInPage extends StatelessWidget {
               SizedBox(
                 height: height(context: context, value: 0.05),
               ),
-              Row(
-                children: [
-                  Expanded(child: Image.asset("assets/logos/rowOne.png")),
-                  styleText(
-                      text: "Or Continue With",
-                      txtColor: txtGreyShade,
-                      size: 15.sp),
-                  Expanded(child: Image.asset("assets/logos/rowTwo.png")),
-                ],
+              Center(
+                child: styleText(
+                    text: "Or Continue With",
+                    txtColor: txtGreyShade,
+                    size: 16.sp,
+                    weight: FontWeight.w500),
               ),
               SizedBox(
-                height: height(context: context, value: 0.05),
+                height: height(context: context, value: 0.03),
               ),
               Container(
                 height: height(context: context, value: 0.06),
@@ -207,7 +208,7 @@ class LogInPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
+    }));
   }
 }

@@ -36,7 +36,7 @@ class _ProfileViewState extends State<ProfileView> {
               padding: EdgeInsets.only(
                   left: MediaQuery.of(context).size.width * 0.08, bottom: 3.h),
               child: styleText(
-                  text: "Name *", txtColor: headingColorText, size: 15.sp),
+                  text: "Name *", txtColor: greenTextColor, size: 15.sp),
             ),
             textFormField(context),
             SizedBox(
@@ -47,7 +47,7 @@ class _ProfileViewState extends State<ProfileView> {
                   left: MediaQuery.of(context).size.width * 0.08, bottom: 3.h),
               child: styleText(
                   text: "Mobile Number *",
-                  txtColor: headingColorText,
+                  txtColor: greenTextColor,
                   size: 15.sp),
             ),
             textFormField(context),
@@ -58,7 +58,7 @@ class _ProfileViewState extends State<ProfileView> {
               padding: EdgeInsets.only(
                   left: MediaQuery.of(context).size.width * 0.08, bottom: 3.h),
               child: styleText(
-                  text: "Email *", txtColor: headingColorText, size: 15.sp),
+                  text: "Email *", txtColor: greenTextColor, size: 15.sp),
             ),
             textFormField(context),
             SizedBox(
@@ -68,7 +68,7 @@ class _ProfileViewState extends State<ProfileView> {
               padding: EdgeInsets.only(
                   left: MediaQuery.of(context).size.width * 0.08, bottom: 3.h),
               child: styleText(
-                  text: "DOB *", txtColor: headingColorText, size: 15.sp),
+                  text: "DOB *", txtColor: greenTextColor, size: 15.sp),
             ),
             textFormField(context),
             SizedBox(
@@ -83,7 +83,7 @@ class _ProfileViewState extends State<ProfileView> {
                 child: ElevatedButton(
                     style: ButtonStyle(
                         backgroundColor:
-                            MaterialStateProperty.all(const Color(0xff00712D)),
+                            MaterialStateProperty.all(greenTextColor),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -134,7 +134,7 @@ class _ProfileViewState extends State<ProfileView> {
       child: Center(
         child: TextFormField(
           maxLines: 1,
-          cursorColor: headingColorText,
+          cursorColor: greenTextColor,
           decoration: InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),

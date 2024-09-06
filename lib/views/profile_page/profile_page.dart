@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -132,24 +133,31 @@ class _ProfilePageState extends State<ProfilePage> {
             child: ListView(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               children: [
-                _buildListTile(
-                  icon: Iconsax.car_bold,
-                  title: styleText(
-                      text: "Rides", txtColor: txtGreyShade, size: 16.sp),
+                GestureDetector(
+                  onTap:(){
+              print(MediaQuery.of(context).size.height);
+              print(MediaQuery.of(context).size.width);
+    },
+                  child: _buildListTile(
+                    icon: Iconsax.car_outline,
+                    title: styleText(
+                        text: "Rides", txtColor: txtGreyShade, size: 16.sp),
+                  ),
                 ),
                 const Divider(),
                 _buildListTile(
-                  icon: Iconsax.location_add_bold,
+                  icon: Iconsax.location_add_outline,
                   title: styleText(
                       text: "Address", txtColor: txtGreyShade, size: 16.sp),
                 ),
                 const Divider(),
                 GestureDetector(
                   onTap: () {
-                    Get.to(const ProfileView());
+                    Get.to((const ProfileView()),transition: Transition.rightToLeft);
+
                   },
                   child: _buildListTile(
-                    icon: Icons.person_3_rounded,
+                    icon: Icons.person_3_outlined,
                     title: styleText(
                         text: "Profile", txtColor: txtGreyShade, size: 16.sp),
                   ),
@@ -162,7 +170,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const Divider(),
                 _buildListTile(
-                  icon: Icons.info_rounded,
+                  icon: Icons.info_outline,
                   title: styleText(
                       text: "General Info",
                       txtColor: txtGreyShade,
@@ -195,9 +203,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildListTile({required IconData icon, required Widget title}) {
     return ListTile(
       leading: Icon(
-        weight: 20,
         icon,
-        color: newtestColor,
+        color: greenTextColor,
         size: 17.sp,
       ),
       title: title,
