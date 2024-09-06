@@ -26,6 +26,7 @@ class _ProfileViewState extends State<ProfileView> {
               },
               icon: const Icon(Icons.arrow_back_ios_new_rounded))),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

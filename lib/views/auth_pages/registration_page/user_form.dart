@@ -25,6 +25,7 @@ class _UserFormState extends State<UserForm> {
         assignId: true,
         builder: (ctrl) {
           return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: SafeArea(
               child: Column(
                 children: [

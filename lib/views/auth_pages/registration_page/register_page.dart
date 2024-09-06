@@ -8,8 +8,17 @@ import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+
+  final ScrollController _scrollController = ScrollController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +27,8 @@ class RegisterPage extends StatelessWidget {
         builder: (ctrl) {
           return SafeArea(
             child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
                   Lottie.asset("assets/images/second.json",height: 180.h,repeat:false),
@@ -142,7 +153,7 @@ class RegisterPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: height(context: context, value: 0.15),
+                    height: height(context: context, value: 0.08),
                   ),
                   Padding(
                     padding: EdgeInsets.all(

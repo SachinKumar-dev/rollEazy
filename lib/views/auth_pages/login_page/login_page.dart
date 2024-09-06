@@ -15,6 +15,7 @@ class LogInPage extends StatelessWidget {
     return Scaffold(body: GetBuilder<UserFormController>(builder: (ctrl) {
       return SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
               Lottie.asset("assets/images/first.json",height: 180.h,repeat:false),
