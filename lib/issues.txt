@@ -1,7 +1,0 @@
-1. do not add this to git hub
-2. smooth animations like from splash - > landing shows sudden shift
-3. Add get navigator
-4. Widget Testing mainly dob in user form
-7. Login page logo issue
-8. Need to add animations in nav, splash screen - logo , color
-

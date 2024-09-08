@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
+import 'package:roll_eazy/services/api_services/api_services.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
-import 'package:roll_eazy/views/homepage/home_screen.dart';
-import 'package:roll_eazy/views/homepage/detailed_screen.dart';
-import 'package:roll_eazy/views/profile_page/profile_page.dart';
-
 import 'package:roll_eazy/views/splash_screen/splash_screen.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+  Get.put(ApiServices());
   Get.put(UserFormController());
   runApp(const MyApp());
 }

@@ -71,7 +71,7 @@ Widget txtField(
       width: width(context: context, value: 0.9),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10.r),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
@@ -93,12 +93,12 @@ Widget txtField(
           hintText: txt,
           hintStyle: GoogleFonts.poppins(fontSize: 15.sp, color: Colors.grey),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.r),
+            borderRadius: BorderRadius.circular(12.r),
             borderSide: const BorderSide(color: Colors.grey, width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.r),
-            borderSide: const BorderSide(color: Colors.grey, width: 2),
+            borderSide:  BorderSide(color: greenTextColor, width: 2),
           ),
         ),
       ),
@@ -108,7 +108,10 @@ Widget txtField(
 
 //TextField for user form page
 Widget txtFormField(
-    {required context, required String text, TextEditingController? textType}) {
+    {required context,
+    required String text,
+    TextEditingController? textType,
+    TextInputType type = TextInputType.name}) {
   return Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
     elevation: 1,
@@ -117,7 +120,7 @@ Widget txtFormField(
       width: width(context: context, value: 0.9),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10.r),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
@@ -128,6 +131,7 @@ Widget txtFormField(
         ],
       ),
       child: TextField(
+        keyboardType: type,
         controller: textType,
         cursorColor: greenTextColor,
         decoration: InputDecoration(
@@ -139,7 +143,7 @@ Widget txtFormField(
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.r),
-            borderSide: const BorderSide(color: Colors.grey, width: 2),
+            borderSide:  BorderSide(color:greenTextColor, width: 2),
           ),
         ),
       ),
