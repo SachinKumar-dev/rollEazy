@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 
@@ -107,11 +109,16 @@ class _ProfileViewState extends State<ProfileView> {
             Padding(
               padding: EdgeInsets.only(
                   left: MediaQuery.of(context).size.width * 0.085),
-              child: styleText(
-                  text: "Delete Account",
-                  size: 15.sp,
-                  txtColor: Colors.red,
-                  weight: FontWeight.w500),
+              child: GestureDetector(
+                onTap: ()  {
+                   Get.find<UserFormController>().showDeleteConfirmationDialog();
+                },
+                child: styleText(
+                    text: "Delete Account",
+                    size: 15.sp,
+                    txtColor: Colors.red,
+                    weight: FontWeight.w600),
+              ),
             ),
             Padding(
               padding: EdgeInsets.only(

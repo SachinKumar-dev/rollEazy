@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 
@@ -15,19 +15,9 @@ class SecureToken extends GetxController {
     return await secStorage.read(key: "Access Token");
   }
 
-  //setup Req to add access token to header
-  Dio dio = Dio();
-
-  Future<void> setupDio() async {
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        String? token = await getToken(); // Retrieve the token
-        if (token != null) {
-          options.headers['Authorization'] =
-              'Bearer $token'; // Add token to the header
-        }
-        return handler.next(options);
-      },
-    ));
+  //delete token
+  Future<void>deleteToken()async{
+    await secStorage.delete(key: "Access Token");
   }
+
 }

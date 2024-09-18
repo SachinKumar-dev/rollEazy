@@ -21,8 +21,21 @@ class ApiServices extends GetxController {
     return '$baseUrl/isUserExist';
   }
 
-  //User Exist?
+  //Reset password
   String getResetPasswordUrl() {
     return '$baseUrl/sendVerification';
   }
+
+  //secureRoute
+  String getSecureRoutedUrl() {
+    return '$baseUrl/secureRoute';
+  }
+
+  //deleteAccount
+  String getDeleteAccountRoutedUrl() {
+    return '$baseUrl/deleteAccount';
+  }
+
+
+
 }

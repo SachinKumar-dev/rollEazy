@@ -15,6 +15,8 @@ class ResetPassword extends StatefulWidget {
 }
 
 class _ResetPasswordState extends State<ResetPassword> {
+  bool isVisible = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +51,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                             borderRadius: BorderRadius.circular(12.r)),
                         elevation: 2,
                         child: Container(
-                          height: height(context: context, value: 0.5),
+                          height: isVisible
+                              ? height(context: context, value: 0.5)
+                              : height(context: context, value: 0.3),
                           width: width(context: context, value: 0.9),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12.r),
@@ -65,21 +69,29 @@ class _ResetPasswordState extends State<ResetPassword> {
                                     text: "Email",
                                     textType: ctrl.resetEmail),
                                 SizedBox(
-                                  height: height(context: context, value: 0.03),
+                                  height: isVisible
+                                      ? height(context: context, value: 0.03)
+                                      : height(context: context, value: 0.0),
                                 ),
-                                txtFormField(
-                                    type: TextInputType.name,
-                                    context: context,
-                                    text: "OTP",
-                                    textType: ctrl.OTP),
+                                Visibility(
+                                  visible: isVisible,
+                                  child: txtFormField(
+                                      type: TextInputType.name,
+                                      context: context,
+                                      text: "OTP",
+                                      textType: ctrl.OTP),
+                                ),
                                 SizedBox(
                                   height: height(context: context, value: 0.03),
                                 ),
-                                txtFormField(
-                                    type: TextInputType.name,
-                                    context: context,
-                                    text: "New Password",
-                                    textType: ctrl.newPassword),
+                                Visibility(
+                                  visible: isVisible,
+                                  child: txtFormField(
+                                      type: TextInputType.name,
+                                      context: context,
+                                      text: "New Password",
+                                      textType: ctrl.newPassword),
+                                ),
                                 SizedBox(
                                   height: height(context: context, value: 0.03),
                                 ),
@@ -117,13 +129,21 @@ class _ResetPasswordState extends State<ResetPassword> {
                                                         8.0.r),
                                               ),
                                             )),
-                                        onPressed: () {
+                                        onPressed: () async {
                                           FocusManager.instance.primaryFocus
                                               ?.unfocus();
-                                          ctrl.registerUser();
+                                          bool exist =
+                                              await ctrl.doesUserExist();
+                                          if (exist) {
+                                            setState(() {
+                                              isVisible = true;
+                                            });
+                                          }
                                         },
                                         child: styleText(
-                                            text: "Verify Email",
+                                            text: isVisible
+                                                ? "Update Password"
+                                                : "Verify Email",
                                             txtColor: Colors.white,
                                             size: textSize(value: 15.sp),
                                             weight: FontWeight.w500)),

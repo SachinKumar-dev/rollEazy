@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,13 +9,28 @@ import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 import 'package:roll_eazy/views/auth_pages/registration_page/user_form.dart';
 import 'package:roll_eazy/views/auth_pages/reset_password_page/reset_password.dart';
 
-class LogInPage extends StatelessWidget {
+class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
 
   @override
+  State<LogInPage> createState() => _LogInPageState();
+}
+
+class _LogInPageState extends State<LogInPage> {
+  bool isVisible = true;
+
+  //visibility
+  void toggleVisibility() {
+    setState(() {
+     isVisible=!isVisible;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(body: GestureDetector(
-      onTap: (){
+    return Scaffold(
+        body: GestureDetector(
+      onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: GetBuilder<UserFormController>(builder: (ctrl) {
@@ -53,17 +67,17 @@ class LogInPage extends StatelessWidget {
                   height: height(context: context, value: 0.05),
                 ),
                 Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r)),
                   elevation: 2,
                   child: Container(
-                    height: height(context: context,value: 0.4),
-                    width: width(context: context,value: 0.9),
+                    height: height(context: context, value: 0.4),
+                    width: width(context: context, value: 0.9),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                     color: Colors.grey.shade200
-                    ),
+                        borderRadius: BorderRadius.circular(12.r),
+                        color: Colors.grey.shade200),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal:12.w),
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -80,14 +94,16 @@ class LogInPage extends StatelessWidget {
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: -22, // How much the shadow spreads
-                                    blurRadius: 10, // Softness of the shadow
+                                    spreadRadius: -22,
+                                    // How much the shadow spreads
+                                    blurRadius: 10,
+                                    // Softness of the shadow
                                     offset: const Offset(-5, 28),
                                   ),
                                 ],
                               ),
                               child: TextField(
-                                controller: ctrl.email,
+                                controller: ctrl.logEmail,
                                 cursorColor: greenTextColor,
                                 decoration: InputDecoration(
                                   hintText: "Enter your email",
@@ -95,13 +111,13 @@ class LogInPage extends StatelessWidget {
                                       fontSize: 15.sp, color: Colors.grey),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8.r),
-                                    borderSide:
-                                     BorderSide(color: txtGreyShade, width: 1),
+                                    borderSide: BorderSide(
+                                        color: txtGreyShade, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12.r),
-                                    borderSide:
-                                     BorderSide(color: greenTextColor, width: 2),
+                                    borderSide: BorderSide(
+                                        color: greenTextColor, width: 2),
                                   ),
                                 ),
                               ),
@@ -124,53 +140,69 @@ class LogInPage extends StatelessWidget {
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: -22, // How much the shadow spreads
-                                    blurRadius: 10, // Softness of the shadow
+                                    spreadRadius: -22,
+                                    // How much the shadow spreads
+                                    blurRadius: 10,
+                                    // Softness of the shadow
                                     offset: const Offset(-5, 28),
                                   ),
                                 ],
                               ),
                               child: TextField(
-                                controller: ctrl.password,
-                                obscureText: true,
+                                controller: ctrl.logPassword,
+                                obscureText: isVisible,
                                 cursorColor: greenTextColor,
                                 decoration: InputDecoration(
-                                  suffixIcon: Icon(
-                                    Icons.visibility_off,
-                                    color: greenTextColor,
-                                  ),
+                                  suffixIcon: IconButton(
+                                      onPressed: () {
+                                        toggleVisibility();
+                                      },
+                                      icon: isVisible
+                                          ? Icon(
+                                              Icons.visibility_off,
+                                              color: greenTextColor,
+                                            )
+                                          : Icon(
+                                              Icons.visibility,
+                                              color: greenTextColor,
+                                            )),
                                   hintText: "Enter your password",
                                   hintStyle: GoogleFonts.poppins(
                                       fontSize: 15.sp, color: Colors.grey),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8.r),
-                                    borderSide:
-                                     BorderSide(color: txtGreyShade, width: 1),
+                                    borderSide: BorderSide(
+                                        color: txtGreyShade, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12.r),
-                                    borderSide:
-                                     BorderSide(color:greenTextColor, width: 2),
+                                    borderSide: BorderSide(
+                                        color: greenTextColor, width: 2),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                           Padding(
-                            padding:
-                            EdgeInsets.only(top:MediaQuery.of(context).size.width * 0.05,right: MediaQuery.of(context).size.width * 0.02,bottom: MediaQuery.of(context).size.width * 0.05),
+                            padding: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.width * 0.05,
+                                right: MediaQuery.of(context).size.width * 0.02,
+                                bottom:
+                                    MediaQuery.of(context).size.width * 0.05),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    FocusManager.instance.primaryFocus?.unfocus();
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
                                     Get.to((const ResetPassword()),
                                         transition: Transition.rightToLeft);
                                   },
                                   child: styleText(
                                       text: "Forgot Password ?",
-                                      txtColor:greenTextColor,weight: FontWeight.w400,
+                                      txtColor: greenTextColor,
+                                      weight: FontWeight.w400,
                                       size: 18.sp),
                                 ),
                               ],
@@ -187,8 +219,10 @@ class LogInPage extends StatelessWidget {
                                 boxShadow: [
                                   BoxShadow(
                                     color: greenTextColor.withOpacity(0.5),
-                                    spreadRadius: -25, // How much the shadow spreads
-                                    blurRadius: 10, // Softness of the shadow
+                                    spreadRadius: -25,
+                                    // How much the shadow spreads
+                                    blurRadius: 10,
+                                    // Softness of the shadow
                                     offset: const Offset(-5, 27),
                                   ),
                                 ],
@@ -196,16 +230,19 @@ class LogInPage extends StatelessWidget {
                               child: ElevatedButton(
                                   style: ButtonStyle(
                                       backgroundColor:
-                                      MaterialStateProperty.all(greenTextColor),
-                                      shape:
-                                      MaterialStateProperty.all<RoundedRectangleBorder>(
+                                          MaterialStateProperty.all(
+                                              greenTextColor),
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8.0.r),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0.r),
                                         ),
                                       )),
                                   onPressed: () {
-                                    FocusManager.instance.primaryFocus?.unfocus();
-                                    ctrl.loginUser();
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                    ctrl.logInValidations();
                                   },
                                   child: styleText(
                                       text: "Sign in",
@@ -219,15 +256,19 @@ class LogInPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height:height(context: context,value: 0.02)),
-                styleText(text: "Or,",txtColor: txtGreyShade,size: 16.sp),
+                SizedBox(height: height(context: context, value: 0.02)),
+                styleText(text: "Or,", txtColor: txtGreyShade, size: 16.sp),
                 GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       FocusManager.instance.primaryFocus?.unfocus();
                       Get.to((const UserForm()),
                           transition: Transition.rightToLeft);
                     },
-                    child: styleText(text: "Register yourself!",txtColor: greenTextColor,weight: FontWeight.w500,size: 18.sp)),
+                    child: styleText(
+                        text: "Register yourself!",
+                        txtColor: greenTextColor,
+                        weight: FontWeight.w600,
+                        size: 18.sp)),
               ],
             ),
           ),

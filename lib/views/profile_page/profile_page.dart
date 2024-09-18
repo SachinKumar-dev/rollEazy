@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 import 'package:roll_eazy/views/profile_page/profile_view.dart';
+import 'package:roll_eazy/controllers/user_form_ctrl/global_user.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,6 +17,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final GlobalUserController loggedInUser = Get.find<GlobalUserController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           icon:
-              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+          const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -72,15 +76,21 @@ class _ProfilePageState extends State<ProfilePage> {
                         decoration: const BoxDecoration(
                             shape: BoxShape.circle, color: Colors.white),
                         child: ClipOval(
-                          child: Image.network(
-                            "https://media.istockphoto.com/id/2106867986/photo/young-man-gesturing-double-thumbs-up-isolate-over-grey-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=qfxttTLFF5DHUvidCxpWlp6owOIIRwG2AFl-cy8Y_tE=",
-                            fit: BoxFit.cover,
-                          ),
+                          child: Obx(() {
+                            return Image.network(
+                              loggedInUser.user.value?.profileImage ??
+                                  "https://cdn-icons-png.flaticon.com/128/16385/16385147.png",
+                              fit: BoxFit.cover,
+                            );
+                          }),
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
-                            left: MediaQuery.of(context).size.width * 0.08),
+                            left: MediaQuery
+                                .of(context)
+                                .size
+                                .width * 0.08),
                         child: styleText(
                             text: "Sachin Kumar",
                             txtColor: Colors.white,
@@ -90,8 +100,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height * 0.1,
-                        left: MediaQuery.of(context).size.width * 0.025),
+                        top: MediaQuery
+                            .of(context)
+                            .size
+                            .height * 0.1,
+                        left: MediaQuery
+                            .of(context)
+                            .size
+                            .width * 0.025),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -134,10 +150,16 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               children: [
                 GestureDetector(
-                  onTap:(){
-              print(MediaQuery.of(context).size.height);
-              print(MediaQuery.of(context).size.width);
-    },
+                  onTap: () {
+                    print(MediaQuery
+                        .of(context)
+                        .size
+                        .height);
+                    print(MediaQuery
+                        .of(context)
+                        .size
+                        .width);
+                  },
                   child: _buildListTile(
                     icon: Iconsax.car_outline,
                     title: styleText(
@@ -153,8 +175,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 const Divider(),
                 GestureDetector(
                   onTap: () {
-                    Get.to((const ProfileView()),transition: Transition.rightToLeft);
-
+                    Get.to((const ProfileView()),
+                        transition: Transition.rightToLeft);
                   },
                   child: _buildListTile(
                     icon: Icons.person_3_outlined,
@@ -180,20 +202,28 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(
-                bottom: MediaQuery.of(context).size.height * 0.05),
-            height: height(context: context, value: 0.05),
-            width: width(context: context, value: 0.235),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6.r),
-                border: Border.all(color: Colors.grey.shade300, width: 1)),
-            child: Center(
-                child: styleText(
-                    text: "Log Out",
-                    txtColor: Colors.red,
-                    size: 15.sp,
-                    weight: FontWeight.w500)),
+          GestureDetector(
+            onTap: ()async{
+             await Get.find<UserFormController>().logOut();
+            },
+            child: Container(
+              margin: EdgeInsets.only(
+                  bottom: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.05),
+              height: height(context: context, value: 0.05),
+              width: width(context: context, value: 0.235),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6.r),
+                  border: Border.all(color: Colors.grey.shade300, width: 1)),
+              child: Center(
+                  child: styleText(
+                      text: "Log Out",
+                      txtColor: Colors.red,
+                      size: 15.sp,
+                      weight: FontWeight.w500)),
+            ),
           ),
         ],
       ),

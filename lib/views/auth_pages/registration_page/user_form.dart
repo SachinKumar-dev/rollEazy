@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:roll_eazy/controllers/user_form_ctrl/image_ctrl.dart';
 import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
@@ -17,11 +18,13 @@ class UserForm extends StatefulWidget {
 }
 
 class _UserFormState extends State<UserForm> {
+  final ImageController controller = Get.find();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           FocusManager.instance.primaryFocus?.unfocus();
         },
         child: GetBuilder<UserFormController>(
@@ -38,8 +41,14 @@ class _UserFormState extends State<UserForm> {
                     ),
                     Padding(
                       padding: EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width * 0.07,
-                          top: MediaQuery.of(context).size.width * 0.07),
+                          left: MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.07,
+                          top: MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.07),
                       child: Row(
                         children: [
                           styleText(
@@ -141,18 +150,18 @@ class _UserFormState extends State<UserForm> {
                                 child: ElevatedButton(
                                     style: ButtonStyle(
                                         backgroundColor:
-                                            MaterialStateProperty.all(
-                                                greenTextColor),
+                                        MaterialStateProperty.all(
+                                            greenTextColor),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(8.0.r),
+                                            BorderRadius.circular(8.0.r),
                                           ),
                                         )),
                                     onPressed: () async {
                                       final DateTime? selected =
-                                          await showDatePicker(
+                                      await showDatePicker(
                                         context: context,
                                         initialDate: DateTime.now(),
                                         firstDate: DateTime(1900, 1, 1),
@@ -160,8 +169,8 @@ class _UserFormState extends State<UserForm> {
                                       );
                                       if (selected != null) {
                                         String formatedDate =
-                                            DateFormat('dd-MM-yyyy')
-                                                .format(selected);
+                                        DateFormat('dd-MM-yyyy')
+                                            .format(selected);
                                         ctrl.dob.text = formatedDate.toString();
                                       }
                                     },
@@ -190,7 +199,11 @@ class _UserFormState extends State<UserForm> {
                                 color: greenTextColor),
                             Padding(
                               padding: EdgeInsets.only(
-                                  left: MediaQuery.of(context).size.width * 0.03),
+                                  left:
+                                  MediaQuery
+                                      .of(context)
+                                      .size
+                                      .width * 0.03),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -267,7 +280,11 @@ class _UserFormState extends State<UserForm> {
                                 color: greenTextColor),
                             Padding(
                               padding: EdgeInsets.only(
-                                  left: MediaQuery.of(context).size.width * 0.03),
+                                  left:
+                                  MediaQuery
+                                      .of(context)
+                                      .size
+                                      .width * 0.03),
                               child: Column(
                                 children: [
                                   Row(
@@ -325,10 +342,14 @@ class _UserFormState extends State<UserForm> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        dotText(
-                            context: context,
-                            text: "Profile Image",
-                            color: Colors.red),
+                        Obx(() {
+                          return dotText(
+                              context: context,
+                              text: "Profile Image",
+                              color: controller.isImageSelected.value
+                                  ? greenTextColor
+                                  : Colors.red);
+                        }),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 8.w),
                           child: ElevatedButton(
@@ -338,10 +359,12 @@ class _UserFormState extends State<UserForm> {
                                       borderRadius: BorderRadius.circular(8.r)),
                                 ),
                                 backgroundColor:
-                                    MaterialStateProperty.all(greenTextColor),
+                                MaterialStateProperty.all(greenTextColor),
                               ),
-                              onPressed: () {},
-                              child: styleText(text: "Select",size: 15.sp)),
+                              onPressed: () {
+                                controller.imagePicker();
+                              },
+                              child: styleText(text: "Select", size: 15.sp)),
                         )
                       ],
                     ),
@@ -368,7 +391,7 @@ class _UserFormState extends State<UserForm> {
                         child: ElevatedButton(
                             style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.all(greenTextColor),
+                                MaterialStateProperty.all(greenTextColor),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
@@ -377,8 +400,7 @@ class _UserFormState extends State<UserForm> {
                                 )),
                             onPressed: () {
                               FocusManager.instance.primaryFocus?.unfocus();
-                              Get.to((const RegisterPage()),
-                                  transition: Transition.rightToLeft);
+                              ctrl.formValidations();
                             },
                             child: styleText(
                                 text: "Next Step",
@@ -390,7 +412,10 @@ class _UserFormState extends State<UserForm> {
 
                     Padding(
                       padding: EdgeInsets.all(
-                          MediaQuery.of(context).size.width * 0.06),
+                          MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.06),
                       child: StepProgressIndicator(
                         roundedEdges: Radius.circular(20.r),
                         totalSteps: 2,
