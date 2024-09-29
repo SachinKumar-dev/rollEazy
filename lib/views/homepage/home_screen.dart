@@ -1,12 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
+import 'package:roll_eazy/views/auth_pages/login_page/login_page.dart';
 import 'package:roll_eazy/views/homepage/detailed_screen.dart';
+import 'package:roll_eazy/views/landing_page/landing_page.dart';
 import 'package:roll_eazy/views/profile_page/profile_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,8 +26,12 @@ class _HomePageState extends State<HomePage> {
       _selectedIndex = index;
     });
     if (_selectedIndex == 2) {
-      Get.to((const ProfilePage()),transition: Transition.rightToLeft);
-
+      if(Get.find<UserFormController>().isGuest.value==true){
+        Get.offAll(()=>const LandingPage());
+      }
+      else{
+        Get.to((const ProfilePage()),transition: Transition.rightToLeft);
+      }
       _selectedIndex = 0;
     }
   }

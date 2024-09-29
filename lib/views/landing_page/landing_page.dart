@@ -3,10 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 import 'package:roll_eazy/views/auth_pages/login_page/login_page.dart';
-import 'package:roll_eazy/views/auth_pages/registration_page/register_page.dart';
 import 'package:roll_eazy/views/auth_pages/registration_page/user_form.dart';
 import 'package:roll_eazy/views/homepage/home_screen.dart';
 
@@ -52,7 +52,7 @@ class _LandingPageState extends State<LandingPage>
   }
 
   //on tap animation
-  void _handleTap() {
+  void _handleTap(String pageType) {
     // Start the forward animation
     _tapController.forward();
     // Add a listener to control the navigation and reset
@@ -61,11 +61,28 @@ class _LandingPageState extends State<LandingPage>
       if (_tapController.value >= 0.450 && !_isNavigating) {
         _isNavigating = true;
         // Navigate to the new page
-        Get.to((const HomePage()),transition: Transition.rightToLeft)?.then((value) {
-          // Reset the animation and flag when coming back
-          _tapController.reset();
-          _isNavigating = false;
-        });
+        if (pageType == "Guest") {
+          Get.to(() => const HomePage(), transition: Transition.rightToLeft)
+              ?.then((value) {
+            // Reset the animation and flag when coming back
+            _tapController.reset();
+            _isNavigating = false;
+          });
+        } else if (pageType == "LogIn") {
+          Get.to(() => const LogInPage(), transition: Transition.rightToLeft)
+              ?.then((value) {
+            // Reset the animation and flag when coming back
+            _tapController.reset();
+            _isNavigating = false;
+          });
+        } else {
+          Get.to(() => const UserForm(), transition: Transition.rightToLeft)
+              ?.then((value) {
+            // Reset the animation and flag when coming back
+            _tapController.reset();
+            _isNavigating = false;
+          });
+        }
       }
     });
   }
@@ -98,8 +115,7 @@ class _LandingPageState extends State<LandingPage>
                             child: child,
                           );
                         },
-                        child: Lottie.asset("assets/images/animation.json"
-                          )),
+                        child: Lottie.asset("assets/images/animation.json")),
                   ),
                 ],
               ),
@@ -143,7 +159,7 @@ class _LandingPageState extends State<LandingPage>
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                           Get.to((const LogInPage()),transition: Transition.rightToLeft);
+                            _handleTap("LogIn");
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -167,8 +183,7 @@ class _LandingPageState extends State<LandingPage>
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Get.to((const UserForm()),transition: Transition.rightToLeft);
-
+                            _handleTap("Register");
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -198,7 +213,8 @@ class _LandingPageState extends State<LandingPage>
               ),
               GestureDetector(
                 onTap: () {
-                  _handleTap();
+                  Get.find<UserFormController>().isGuest.value = true;
+                  _handleTap("Guest");
                 },
                 child: RichText(
                   text: TextSpan(

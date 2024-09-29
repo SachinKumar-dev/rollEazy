@@ -16,14 +16,14 @@ class ApiServices extends GetxController {
     return '$baseUrl/register';
   }
 
-  //User Exist?
-  String getValidUserUrl() {
-    return '$baseUrl/isUserExist';
+  //Send otp?
+  String getSendOtpUrl() {
+    return '$baseUrl/sendVerification';
   }
 
   //Reset password
   String getResetPasswordUrl() {
-    return '$baseUrl/sendVerification';
+    return '$baseUrl/resetPass';
   }
 
   //secureRoute
@@ -35,6 +35,8 @@ class ApiServices extends GetxController {
   String getDeleteAccountRoutedUrl() {
     return '$baseUrl/deleteAccount';
   }
+
+
 
 
 

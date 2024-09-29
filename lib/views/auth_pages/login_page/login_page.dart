@@ -7,7 +7,7 @@ import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 import 'package:roll_eazy/views/auth_pages/registration_page/user_form.dart';
-import 'package:roll_eazy/views/auth_pages/reset_password_page/reset_password.dart';
+import 'package:roll_eazy/views/auth_pages/reset_password_page/otp_send_screen.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -196,7 +196,7 @@ class _LogInPageState extends State<LogInPage> {
                                   onTap: () {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
-                                    Get.to((const ResetPassword()),
+                                    Get.to((const SendOTPScreen()),
                                         transition: Transition.rightToLeft);
                                   },
                                   child: styleText(
