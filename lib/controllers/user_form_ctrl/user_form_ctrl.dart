@@ -11,6 +11,7 @@ import 'package:roll_eazy/controllers/user_form_ctrl/image_ctrl.dart';
 import 'package:roll_eazy/services/api_services/api_services.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/views/auth_pages/login_page/login_page.dart';
+import 'package:roll_eazy/views/auth_pages/registration_page/email_verification.dart';
 import 'package:roll_eazy/views/homepage/home_screen.dart';
 import '../../models/user_model/user_model.dart';
 import '../../services/flutter_secure_token/flutter_secure_storage.dart';
@@ -23,7 +24,7 @@ class UserFormController extends GetxController {
 
   //isGuestUser
 
-  Rx<bool> isGuest=false.obs;
+  Rx<bool> isGuest = false.obs;
 
   //Text Controllers
 
@@ -34,11 +35,12 @@ class UserFormController extends GetxController {
 
   //Reset password
   final TextEditingController resetEmail = TextEditingController();
+  final TextEditingController verifyRegistrationEmail = TextEditingController();
   final TextEditingController OTP = TextEditingController();
+  final TextEditingController registrationOTP = TextEditingController();
   final TextEditingController newPassword = TextEditingController();
 
   //Register
-  final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
 
@@ -78,7 +80,7 @@ class UserFormController extends GetxController {
             ? await MultipartFile.fromFile(profileImage!.path)
             : null,
         'userName': userName.text.trim(),
-        'email': email.text.trim(),
+        'email': verifyRegistrationEmail.text.trim(),
         'password': password.text.trim(),
         'gender': gender,
         'drivingLicense': license,
@@ -190,8 +192,8 @@ class UserFormController extends GetxController {
     }
   }
 
-  //Does user exist
-  Future<bool> sendOTP() async {
+  //send otp during user registration
+  Future<bool> sendRegistrationOTP(String otpType) async {
     Get.dialog(
       Center(
         child: Lottie.asset('assets/images/loading.json'),
@@ -200,30 +202,26 @@ class UserFormController extends GetxController {
     );
     final String sendOtpUrl = url.getSendOtpUrl();
     try {
-     if(resetEmail.text.trim().isNotEmpty){
-       final response = await dio.post(
-         sendOtpUrl,
-         data: {'email': resetEmail.text.trim()},
-       );
-       if (response.statusCode == 200) {
-         Get.back();
-         Get.find<ImageController>().snackBar(
-             "Success!", "Otp sent successfully",
-             txtColor: greenTextColor);
-         Timer(const Duration(seconds: 2), () {
-           Get.to(()=>OTPVerificationScreen(email: resetEmail.text,),transition: Transition.rightToLeft);
-         });
-         print("success otp sent");
-         return true;
-       }
-     }
-     else{
-       Get.back();
-       Get.find<ImageController>().snackBar(
-           "Warning!", "Email is mandatory to fill",
-           txtColor: Colors.red);
-       return false;
-     }
+      if (verifyRegistrationEmail.text.trim().isNotEmpty) {
+        final response = await dio.post(
+          sendOtpUrl,
+          data: {'email': verifyRegistrationEmail.text.trim(), 'type': otpType},
+        );
+        if (response.statusCode == 200) {
+          Get.back();
+          Get.find<ImageController>().snackBar(
+              "Success!", "Otp sent successfully",
+              txtColor: greenTextColor);
+          print("success otp sent");
+          return true;
+        }
+      } else {
+        Get.back();
+        Get.find<ImageController>().snackBar(
+            "Warning!", "Email is mandatory to fill",
+            txtColor: Colors.red);
+        return false;
+      }
       return false;
     } on DioException catch (e) {
       if (e.response != null) {
@@ -233,13 +231,79 @@ class UserFormController extends GetxController {
         print("errorMessage is ${errorMessage}");
         if (response == 404) {
           Get.back();
-          Get.find<ImageController>()
-              .snackBar("Warning!", "User not registered", txtColor: Colors.red);
+          Get.find<ImageController>().snackBar(
+              "Warning!", "User not registered",
+              txtColor: Colors.red);
           print("user not registered unable to sent mail");
           return false;
         }
+      } else {
+        Get.find<ImageController>().snackBar(
+            "Network error!", "Please check internet access",
+            txtColor: Colors.red);
       }
-      else{
+      return false;
+    } catch (e) {
+      Get.back();
+      Get.find<ImageController>()
+          .snackBar("Oops!", "Something went wrong: $e", txtColor: Colors.red);
+      return false;
+    }
+  }
+
+  //send otp during password reset
+  Future<bool> sendResetOTP(String otpType) async {
+    Get.dialog(
+      Center(
+        child: Lottie.asset('assets/images/loading.json'),
+      ),
+      barrierDismissible: false,
+    );
+    final String sendOtpUrl = url.getSendOtpUrl();
+    try {
+      if (resetEmail.text.trim().isNotEmpty) {
+        final response = await dio.post(
+          sendOtpUrl,
+          data: {'email': resetEmail.text.trim(), 'type': otpType},
+        );
+        if (response.statusCode == 200) {
+          Get.back();
+          Get.find<ImageController>().snackBar(
+              "Success!", "Otp sent successfully",
+              txtColor: greenTextColor);
+          Timer(const Duration(seconds: 2), () {
+            Get.to(
+                () => OTPVerificationScreen(
+                      email: resetEmail.text,
+                    ),
+                transition: Transition.rightToLeft);
+          });
+          print("success otp sent");
+          return true;
+        }
+      } else {
+        Get.back();
+        Get.find<ImageController>().snackBar(
+            "Warning!", "Email is mandatory to fill",
+            txtColor: Colors.red);
+        return false;
+      }
+      return false;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print("inside otp sent error status code is ${e.response?.statusCode}");
+        var response = e.response?.statusCode;
+        var errorMessage = e.response?.data['message'];
+        print("errorMessage is ${errorMessage}");
+        if (response == 404) {
+          Get.back();
+          Get.find<ImageController>().snackBar(
+              "Warning!", "User not registered",
+              txtColor: Colors.red);
+          print("user not registered unable to sent mail");
+          return false;
+        }
+      } else {
         Get.find<ImageController>().snackBar(
             "Network error!", "Please check internet access",
             txtColor: Colors.red);
@@ -254,7 +318,7 @@ class UserFormController extends GetxController {
   }
 
   //if user exist send otp and reset the password
-  Future<void> resetPassword()async{
+  Future<void> resetPassword() async {
     Get.dialog(
       Center(
         child: Lottie.asset('assets/images/loading.json'),
@@ -262,74 +326,191 @@ class UserFormController extends GetxController {
       barrierDismissible: false,
     );
     final String resetPassword = url.getResetPasswordUrl();
-    try{
-      if(OTP.text.trim().isNotEmpty && newPassword.text.trim().isNotEmpty){
-        if(newPassword.text.trim().length >= 6 ){
-          final response=await dio.post(resetPassword,data: {
-            "email":resetEmail.text.trim(),
-            "user_otp":OTP.text.trim(),
-            "new_password":newPassword.text.trim()
+    try {
+      if (OTP.text.trim().isNotEmpty && newPassword.text.trim().isNotEmpty) {
+        if (newPassword.text.trim().length >= 6) {
+          final response = await dio.post(resetPassword, data: {
+            "email": resetEmail.text.trim(),
+            "user_otp": OTP.text.trim(),
+            "new_password": newPassword.text.trim()
           });
-          if(response.statusCode==200) {
-            //success
-            //success
+          if (response.statusCode == 200) {
             Get.back();
             Get.find<ImageController>().snackBar(
                 "Success!", "Password updated successfully",
                 txtColor: greenTextColor);
-            Get.offAll(()=>const LogInPage());
+            Get.offAll(() => const LogInPage());
             OTP.clear();
             newPassword.clear();
             resetEmail.clear();
             print("success updated password");
           }
-        }
-        else{
+        } else {
           Get.back();
-          Get.find<ImageController>().snackBar(
-              "Warning!", "Weak password",
-              txtColor: Colors.red);
+          Get.find<ImageController>()
+              .snackBar("Warning!", "Weak password", txtColor: Colors.red);
           return;
         }
-      }
-      else{
+      } else {
         Get.back();
         Get.find<ImageController>().snackBar(
             "Warning!", "Otp and New password are mandatory",
             txtColor: Colors.red);
         return;
       }
-    }on DioException catch(exc){
-      var resStatus=exc.response?.statusCode;
+    } on DioException catch (exc) {
+      var resStatus = exc.response?.statusCode;
       print(resStatus);
-     if(exc.response!=null && resStatus==404){
-       Get.back();
-           Get.find<ImageController>().snackBar(
-               "Warning!", "Invalid otp entered",
-               txtColor: Colors.red);
-     }
-     else if(exc.response!=null && resStatus==401){
+      if (exc.response != null && resStatus == 404) {
+        Get.back();
+        Get.find<ImageController>()
+            .snackBar("Warning!", "Invalid otp entered", txtColor: Colors.red);
+      } else if (exc.response != null && resStatus == 401) {
         Get.find<ImageController>().snackBar(
             "Oops!", "Otp expired, resend the otp",
             txtColor: Colors.red);
-        Get.offAll(()=>const LogInPage());
+        Get.offAll(() => const LogInPage());
         resetEmail.clear();
+      } else {
+        Get.find<ImageController>().snackBar(
+            "Network error!", "Please check internet access",
+            txtColor: Colors.red);
       }
-     else{
-       Get.find<ImageController>().snackBar(
-           "Network error!", "Please check internet access",
-           txtColor: Colors.red);
-     }
-    }catch(error){
+    } catch (error) {
       Get.back();
       print("something went wrong! ${error}");
     }
   }
 
+  //controller to validate the user before registration
+  Future<void> verifyBeforeRegistration() async {
+    Get.dialog(
+      Center(
+        child: Lottie.asset('assets/images/loading.json'),
+      ),
+      barrierDismissible: false,
+    );
+    final String emailVerify = url.getEmailVerificationUrl();
+    try {
+      final response = await dio.post(emailVerify, data: {
+        "email": verifyRegistrationEmail.text.trim(),
+        "user_otp": registrationOTP.text.trim()
+      });
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Success", "Email verified successfully!",
+            colorText: greenTextColor);
+        Get.offAll(()=>const RegisterPage());
+      }
+    } on DioException catch (exc) {
+      var resStatus = exc.response?.statusCode;
+      print(resStatus);
+      if (exc.response != null && resStatus == 404) {
+        Get.back();
+        Get.find<ImageController>()
+            .snackBar("Warning!", "Invalid otp entered", txtColor: Colors.red);
+      } else if (exc.response != null && resStatus == 401) {
+        Get.find<ImageController>().snackBar(
+            "Oops!", "Otp expired, resend the otp",
+            txtColor: Colors.red);
+      } else {
+        Get.find<ImageController>().snackBar(
+            "Network error!", "Please check internet access",
+            txtColor: Colors.red);
+      }
+    } catch (error) {
+      Get.back();
+      print("something went wrong! ${error}");
+    }
+  }
+
+  //resend otp upon registration
+  Future<void> resendOtpOne() async {
+    Get.dialog(
+      Center(
+        child: Lottie.asset('assets/images/loading.json'),
+      ),
+      barrierDismissible: false,
+    );
+    String resendUrl = url.getResendOTPUrl();
+    try {
+     if(verifyRegistrationEmail.text.trim().isNotEmpty){
+       final response = await dio.post(resendUrl,
+           data: {"email": verifyRegistrationEmail.text.trim()});
+
+       if (response.statusCode == 200) {
+         Get.back();
+         Get.snackbar("Success", "Otp sent successfully");
+
+       }
+     }
+     else{
+       Get.back();
+       Get.snackbar("Warning!","Email is required",colorText: Colors.red);
+     }
+    } on DioException catch (exc) {
+      var resStatus = exc.response?.statusCode;
+      print(resStatus);
+      if (exc.response != null && resStatus == 404) {
+        Get.back();
+        Get.find<ImageController>().snackBar(
+            "Oops!", "Unable to sent otp,try again later",
+            txtColor: Colors.red);
+      } else {
+        Get.back();
+        Get.find<ImageController>().snackBar(
+            "Network error!", "Please check internet access",
+            txtColor: Colors.red);
+      }
+    } catch (error) {
+      Get.back();
+      print("something went wrong! ${error}");
+    }
+  }
+
+  //resend otp upon reset password
+  Future<void> resendOtpTwo() async {
+    Get.dialog(
+      Center(
+        child: Lottie.asset('assets/images/loading.json'),
+      ),
+      barrierDismissible: false,
+    );
+    String resendUrl = url.getResendOTPUrl();
+    try {
+        if(resetEmail.text.trim().isNotEmpty){
+          final response =
+          await dio.post(resendUrl, data: {"email": resetEmail.text.trim()});
+
+          if (response.statusCode == 200) {
+            Get.snackbar("Success", "Otp sent successfully");
+          }
+        }
+        else{
+          Get.back();
+          Get.snackbar("Warning!", "Email is required",colorText: Colors.red);
+        }
+    } on DioException catch (exc) {
+      var resStatus = exc.response?.statusCode;
+      print(resStatus);
+      if (exc.response != null && resStatus == 404) {
+        Get.back();
+        Get.find<ImageController>().snackBar(
+            "Oops!", "Unable to sent otp,try again later",
+            txtColor: Colors.red);
+      } else {
+        Get.find<ImageController>().snackBar(
+            "Network error!", "Please check internet access",
+            txtColor: Colors.red);
+      }
+    } catch (error) {
+      Get.back();
+      print("something went wrong! ${error}");
+    }
+  }
 
   // Controller to log out the user
   Future<void> logOut() async {
-    print("inside fun");
     // Show loading dialog
     Get.dialog(
       Center(
@@ -340,7 +521,6 @@ class UserFormController extends GetxController {
 
     String secureUrl = url.getSecureRoutedUrl();
     final token = await Get.find<SecureToken>().getToken();
-    print("token is ${token}");
     try {
       // Add the token to headers for authorization
       final response = await dio.post(
@@ -354,21 +534,16 @@ class UserFormController extends GetxController {
 
       // First, check if the user is valid
       if (response.statusCode == 200) {
-        print("200");
+
         // User found, now I can remove the token
         await Get.find<SecureToken>().deleteToken();
 
-        // Confirm token deletion
-        final deletedToken = await Get.find<SecureToken>().getToken();
-        print("Token after deletion: ${deletedToken.toString()}");
 
         // Navigate the user to the login page
         Get.offAll(() => const LogInPage());
       }
     } on DioException catch (e) {
       // Handle specific status codes
-      print(e.response?.data);
-      print(e.response?.statusCode);
       if (e.response?.statusCode != null) {
         if (e.response?.statusCode == 401) {
           showSnackBar("Warning!", "Unauthorized user", Colors.red);
@@ -439,8 +614,9 @@ class UserFormController extends GetxController {
   //show dialog
   void showDeleteConfirmationDialog() {
     Get.defaultDialog(
-      title:"Delete Account!",
-      titleStyle: GoogleFonts.poppins(fontSize:15.sp,color:Colors.red,fontWeight:FontWeight.w500),
+      title: "Delete Account!",
+      titleStyle: GoogleFonts.poppins(
+          fontSize: 15.sp, color: Colors.red, fontWeight: FontWeight.w500),
       middleText: "Are you sure you want to delete your account?",
       middleTextStyle: GoogleFonts.poppins(),
       barrierDismissible: false,
@@ -476,7 +652,8 @@ class UserFormController extends GetxController {
           "Warning!", "Please select profile image",
           txtColor: Colors.red);
     } else {
-      Get.to((const RegisterPage()), transition: Transition.rightToLeft);
+      Get.to((const RegistrationEmailVerification()),
+          transition: Transition.rightToLeft);
     }
   }
 
@@ -489,14 +666,14 @@ class UserFormController extends GetxController {
       barrierDismissible: false,
     );
 
-    if (email.text.trim().isEmpty ||
+    if (verifyRegistrationEmail.text.trim().isEmpty ||
         password.text.trim().isEmpty ||
         confirmPassword.text.trim().isEmpty) {
       Get.back();
       Get.find<ImageController>().snackBar(
           "Warning!", "All fields are mandatory",
           txtColor: Colors.red);
-    } else if (!gmailRegex.hasMatch(email.text.trim())) {
+    } else if (!gmailRegex.hasMatch(verifyRegistrationEmail.text.trim())) {
       Get.back();
       Get.find<ImageController>()
           .snackBar("Warning!", "Invalid email format", txtColor: Colors.red);
@@ -523,7 +700,7 @@ class UserFormController extends GetxController {
           final ImageController controller = Get.find();
           controller.isImageSelected.value = false;
 
-          email.clear();
+          verifyRegistrationEmail.clear();
           password.clear();
           confirmPassword.clear();
           mobileNumber.clear();
@@ -585,5 +762,4 @@ class UserFormController extends GetxController {
     }
     return true;
   }
-
 }

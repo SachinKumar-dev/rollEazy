@@ -418,7 +418,7 @@ class _UserFormState extends State<UserForm> {
                               .width * 0.06),
                       child: StepProgressIndicator(
                         roundedEdges: Radius.circular(20.r),
-                        totalSteps: 2,
+                        totalSteps: 3,
                         currentStep: 1,
                         selectedColor: greenTextColor,
                         unselectedColor: Colors.grey,

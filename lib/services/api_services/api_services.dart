@@ -36,6 +36,16 @@ class ApiServices extends GetxController {
     return '$baseUrl/deleteAccount';
   }
 
+  //verify email before registration
+  String getEmailVerificationUrl() {
+    return '$baseUrl/VerifyOtpWhileRegistering';
+  }
+
+  //resend otp
+  String getResendOTPUrl() {
+    return '$baseUrl/resendOtp';
+  }
+
 
 
 

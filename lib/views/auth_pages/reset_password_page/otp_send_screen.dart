@@ -124,7 +124,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                               onPressed: () async{
                                 FocusManager.instance.primaryFocus
                                     ?.unfocus();
-                                await Get.find<UserFormController>().sendOTP();
+                                await Get.find<UserFormController>().sendResetOTP('reset');
                               },
                               child: styleText(
                                   text:

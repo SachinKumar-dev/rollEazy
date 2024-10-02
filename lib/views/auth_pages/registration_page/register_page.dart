@@ -18,18 +18,19 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool isVisible = true;
-  bool isVisibleCPass=true;
+  bool isVisibleCPass = true;
+
   //visibility
   void toggleVisibility() {
     setState(() {
-      isVisible=!isVisible;
+      isVisible = !isVisible;
     });
   }
 
   //visibility
   void toggleVisibilityTwo() {
     setState(() {
-      isVisibleCPass=!isVisibleCPass;
+      isVisibleCPass = !isVisibleCPass;
     });
   }
 
@@ -53,20 +54,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   Center(
                       child: RichText(
-                        text: TextSpan(
-                          text: "Super ",
-                          style: GoogleFonts.poppins(
-                              fontSize: textSize(value: 18),
-                              color: Colors.grey.shade700),
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: 'Rider',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: greenTextColor)),
-                          ],
-                        ),
-                      )),
+                    text: TextSpan(
+                      text: "Super ",
+                      style: GoogleFonts.poppins(
+                          fontSize: textSize(value: 18),
+                          color: Colors.grey.shade700),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: 'Rider',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: greenTextColor)),
+                      ],
+                    ),
+                  )),
                   SizedBox(
                     height: height(context: context, value: 0.03),
                   ),
@@ -75,7 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         borderRadius: BorderRadius.circular(12.r)),
                     elevation: 2,
                     child: Container(
-                      height: height(context: context, value: 0.48),
+                      height: height(context: context, value: 0.4),
                       width: width(context: context, value: 0.9),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12.r),
@@ -85,51 +86,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.r)),
-                              elevation: 1,
-                              child: Container(
-                                height: height(context: context, value: 0.067),
-                                width: width(context: context, value: 0.9),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius:
-                                      -22, // How much the shadow spreads
-                                      blurRadius: 10, // Softness of the shadow
-                                      offset: const Offset(-5, 28),
-                                    ),
-                                  ],
-                                ),
-                                child: TextField(
-                                  controller: ctrl.email,
-                                  cursorColor: greenTextColor,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter your email",
-                                    hintStyle: GoogleFonts.poppins(
-                                        fontSize: 15.sp, color: Colors.grey),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8.r),
-                                      borderSide: BorderSide(
-                                          color: txtGreyShade, width: 1),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12.r),
-                                      borderSide: BorderSide(
-                                          color: greenTextColor, width: 2),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: height(context: context, value: 0.03),
-                            ),
-
                             Card(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.r)),
@@ -163,13 +119,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                         },
                                         icon: isVisible
                                             ? Icon(
-                                          Icons.visibility_off,
-                                          color: greenTextColor,
-                                        )
+                                                Icons.visibility_off,
+                                                color: greenTextColor,
+                                              )
                                             : Icon(
-                                          Icons.visibility,
-                                          color: greenTextColor,
-                                        )),
+                                                Icons.visibility,
+                                                color: greenTextColor,
+                                              )),
                                     hintText: "Password",
                                     hintStyle: GoogleFonts.poppins(
                                         fontSize: 15.sp, color: Colors.grey),
@@ -223,13 +179,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                         },
                                         icon: isVisibleCPass
                                             ? Icon(
-                                          Icons.visibility_off,
-                                          color: greenTextColor,
-                                        )
+                                                Icons.visibility_off,
+                                                color: greenTextColor,
+                                              )
                                             : Icon(
-                                          Icons.visibility,
-                                          color: greenTextColor,
-                                        )),
+                                                Icons.visibility,
+                                                color: greenTextColor,
+                                              )),
                                     hintText: "Confirm password",
                                     hintStyle: GoogleFonts.poppins(
                                         fontSize: 15.sp, color: Colors.grey),
@@ -262,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     BoxShadow(
                                       color: greenTextColor.withOpacity(0.5),
                                       spreadRadius:
-                                      -25, // How much the shadow spreads
+                                          -25, // How much the shadow spreads
                                       blurRadius: 10, // Softness of the shadow
                                       offset: const Offset(-5, 27),
                                     ),
@@ -271,18 +227,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                 child: ElevatedButton(
                                     style: ButtonStyle(
                                         backgroundColor:
-                                        MaterialStateProperty.all(
-                                            greenTextColor),
+                                            MaterialStateProperty.all(
+                                                greenTextColor),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                             borderRadius:
-                                            BorderRadius.circular(8.0.r),
+                                                BorderRadius.circular(8.0.r),
                                           ),
                                         )),
                                     onPressed: () {
                                       ctrl.registrationValidations();
-
                                     },
                                     child: styleText(
                                         text: "Sign up",
@@ -316,19 +271,19 @@ class _RegisterPageState extends State<RegisterPage> {
                           weight: FontWeight.w600,
                           size: 18.sp)),
                   Padding(
-                    padding: EdgeInsets.all(
-                        MediaQuery
-                            .of(context)
-                            .size
-                            .width * 0.06),
-                    child: StepProgressIndicator(
-                      roundedEdges: Radius.circular(20.r),
-                      totalSteps: 2,
-                      currentStep: 2,
-                      selectedColor: greenTextColor,
-                      unselectedColor: Colors.grey,
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Container(
+                      margin: EdgeInsets.only(
+                          top: height(context: context, value: 0.05)),
+                      child: StepProgressIndicator(
+                        roundedEdges: Radius.circular(20.r),
+                        totalSteps: 3,
+                        currentStep: 3,
+                        selectedColor: greenTextColor,
+                        unselectedColor: Colors.grey,
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
