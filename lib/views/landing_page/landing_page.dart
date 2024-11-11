@@ -8,7 +8,10 @@ import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 import 'package:roll_eazy/views/auth_pages/login_page/login_page.dart';
 import 'package:roll_eazy/views/auth_pages/registration_page/user_form.dart';
+import 'package:roll_eazy/views/auth_pages/registration_page/user_form_screen.dart';
 import 'package:roll_eazy/views/homepage/home_screen.dart';
+
+import '../../logIn_screen.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -17,14 +20,12 @@ class LandingPage extends StatefulWidget {
   _LandingPageState createState() => _LandingPageState();
 }
 
-class _LandingPageState extends State<LandingPage>
-    with TickerProviderStateMixin {
-  //avoid multiple navigation in animation
+class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin {
+  // avoid multiple navigation in animation
   bool _isNavigating = false;
-
   late AnimationController _tapController;
-
   late Animation<Offset> _tapAnimation;
+  String? _pageType;
 
   @override
   void initState() {
@@ -43,6 +44,34 @@ class _LandingPageState extends State<LandingPage>
       parent: _tapController,
       curve: Curves.easeInOut,
     ));
+
+    // Adding a listener
+    _tapController.addListener(() {
+      if (_tapController.value >= 0.450 && !_isNavigating) {
+        _isNavigating = true;
+        // Navigate based on the page type stored in _pageType
+        if (_pageType == "Guest") {
+          Get.to(() => const HomePage(), transition: Transition.rightToLeft)
+              ?.then((value) {
+            // Reset the animation and flag when coming back
+            _tapController.reset();
+            _isNavigating = false;
+          });
+        } else if (_pageType == "LogIn") {
+          Get.to(() => const LoginScreen(), transition: Transition.rightToLeft)
+              ?.then((value) {
+            _tapController.reset();
+            _isNavigating = false;
+          });
+        } else {
+          Get.to(() => const UserFormScreen(), transition: Transition.rightToLeft)
+              ?.then((value) {
+            _tapController.reset();
+            _isNavigating = false;
+          });
+        }
+      }
+    });
   }
 
   @override
@@ -51,40 +80,10 @@ class _LandingPageState extends State<LandingPage>
     super.dispose();
   }
 
-  //on tap animation
+  // Handle tap animation and store the page type for navigation
   void _handleTap(String pageType) {
-    // Start the forward animation
+    _pageType = pageType;
     _tapController.forward();
-    // Add a listener to control the navigation and reset
-    _tapController.addListener(() {
-      // Check if the animation has reached the desired point (e.g., 10% or 0.10)
-      if (_tapController.value >= 0.450 && !_isNavigating) {
-        _isNavigating = true;
-        // Navigate to the new page
-        if (pageType == "Guest") {
-          Get.to(() => const HomePage(), transition: Transition.rightToLeft)
-              ?.then((value) {
-            // Reset the animation and flag when coming back
-            _tapController.reset();
-            _isNavigating = false;
-          });
-        } else if (pageType == "LogIn") {
-          Get.to(() => const LogInPage(), transition: Transition.rightToLeft)
-              ?.then((value) {
-            // Reset the animation and flag when coming back
-            _tapController.reset();
-            _isNavigating = false;
-          });
-        } else {
-          Get.to(() => const UserForm(), transition: Transition.rightToLeft)
-              ?.then((value) {
-            // Reset the animation and flag when coming back
-            _tapController.reset();
-            _isNavigating = false;
-          });
-        }
-      }
-    });
   }
 
   @override
@@ -107,21 +106,20 @@ class _LandingPageState extends State<LandingPage>
                     left: 0,
                     right: 0,
                     child: AnimatedBuilder(
-                        animation: _tapAnimation,
-                        builder: (context, child) {
-                          return Transform.translate(
-                            offset: _tapAnimation.value *
-                                MediaQuery.of(context).size.width,
-                            child: child,
-                          );
-                        },
-                        child: Lottie.asset("assets/images/animation.json")),
+                      animation: _tapAnimation,
+                      builder: (context, child) {
+                        return Transform.translate(
+                          offset: _tapAnimation.value *
+                              MediaQuery.of(context).size.width,
+                          child: child,
+                        );
+                      },
+                      child: Lottie.asset("assets/images/animation.json"),
+                    ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: height(context: context, value: 0.01),
-              ),
+              SizedBox(height: height(context: context, value: 0.01)),
               styleText(
                 text: "Discover Affordable",
                 txtColor: Colors.grey.shade700,
@@ -134,18 +132,14 @@ class _LandingPageState extends State<LandingPage>
                 weight: FontWeight.w500,
                 size: 20.sp,
               ),
-              SizedBox(
-                height: height(context: context, value: 0.03),
-              ),
+              SizedBox(height: height(context: context, value: 0.03)),
               styleText(
                 text: "Get, Set , Go!",
                 txtColor: Colors.grey.shade700,
                 weight: FontWeight.w500,
                 size: 16.5.sp,
               ),
-              SizedBox(
-                height: height(context: context, value: 0.08),
-              ),
+              SizedBox(height: height(context: context, value: 0.08)),
               Card(
                 elevation: 2,
                 shape: RoundedRectangleBorder(
@@ -208,9 +202,7 @@ class _LandingPageState extends State<LandingPage>
                   ),
                 ),
               ),
-              SizedBox(
-                height: height(context: context, value: 0.02),
-              ),
+              SizedBox(height: height(context: context, value: 0.02)),
               GestureDetector(
                 onTap: () {
                   Get.find<UserFormController>().isGuest.value = true;

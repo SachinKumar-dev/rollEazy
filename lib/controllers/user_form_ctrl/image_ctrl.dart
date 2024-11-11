@@ -19,9 +19,9 @@ class ImageController extends GetxController {
       if (pickedFile != null) {
         final file = File(pickedFile.path);
         int sizeInBytes = file.lengthSync();
-        double sizeInMB = sizeInBytes / (1024 * 1024);
+        double sizeInMB = sizeInBytes / (1024 * 1024 * 1024);
 
-        if (sizeInMB > 1.0) {
+        if (sizeInMB > 3.0) {
           Get.snackbar("Warning!", "Image size exceeds 1MB",
               colorText: Colors.red);
           return;
@@ -45,7 +45,7 @@ class ImageController extends GetxController {
       CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: imageFile.path,
         aspectRatio: const CropAspectRatio(
-            ratioX: 1.0, ratioY: 1.0), // Circular aspect ratio
+            ratioX: 1.0, ratioY: 1.0),
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Crop Image',
@@ -53,12 +53,11 @@ class ImageController extends GetxController {
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.square,
             lockAspectRatio: true,
-            // Locks to 1:1 aspect ratio
-            hideBottomControls: true, // Hide aspect ratio controls
+            hideBottomControls: true,
           ),
           IOSUiSettings(
             title: 'Crop Image',
-            aspectRatioLockEnabled: true, // Locks the aspect ratio for iOS
+            aspectRatioLockEnabled: true,
           ),
         ],
       );

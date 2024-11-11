@@ -19,6 +19,18 @@ class User {
     this.profileImage,
   });
 
+  //making a json file for  caching
+  Map<String, dynamic> toJson() => {
+    '_id': id,
+    'userName': userName,
+    'email': email,
+    'mobileNumber': mobileNumber,
+    'gender': gender,
+    'dob': dob,
+    'drivingLicense': drivingLicense,
+    'profileImage':profileImage
+  };
+
   // Factory constructor to create a User instance from JSON
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

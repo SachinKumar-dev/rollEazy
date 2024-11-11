@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:roll_eazy/views/auth_pages/reset_password_page/otp_send_screen.dart';
 
 import '../../../controllers/user_form_ctrl/user_form_ctrl.dart';
 import '../../../utility/color_helper/color_helper.dart';
@@ -50,32 +49,21 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                           text: "Reset Password",
                           txtColor: Colors.black,
                           weight: FontWeight.w500),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              left: width(context: context, value: 0.2),
-                              top: 10),
-                          child: RichText(
-                            maxLines: 2,
-                            text: TextSpan(
-                              text: '  We have sent the otp to ',
-                              style: GoogleFonts.poppins(
-                                  fontSize: textSize(value: 15.sp),
-                                  color: Colors.grey.shade700),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: '${widget.email}',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        overflow: TextOverflow.ellipsis,
-                                        fontSize: 15.sp,
-                                        color: greenTextColor)),
-                              ],
-                            ),
-                          ),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: styleText(
+                            text: "We have sent the otp to",
+                            txtColor: Colors.grey.shade700),
                       ),
+                      SizedBox(
+                          width: double.infinity,
+                          child: Center(
+                              child: Text(
+                            "${widget.email}",
+                            style: GoogleFonts.poppins(fontSize: 16.sp),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ))),
                       SizedBox(
                         height: height(context: context, value: 0.02),
                       ),
@@ -160,8 +148,8 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                           child: ElevatedButton(
                               style: ButtonStyle(
                                   backgroundColor:
-                                      MaterialStateProperty.all(greenTextColor),
-                                  shape: MaterialStateProperty.all<
+                                      WidgetStateProperty.all(greenTextColor),
+                                  shape: WidgetStateProperty.all<
                                       RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
                                       borderRadius:
@@ -181,20 +169,19 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Get.off(() => const SendOTPScreen(),
-                              transition: Transition.rightToLeft);
+                        onTap: () async {
+                          await Get.find<UserFormController>().resendOtpTwo();
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(vertical: 50.h),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.arrow_back, color: txtGreyShade),
                               styleText(
-                                  text: "Resend otp",
-                                  txtColor: txtGreyShade,
-                                  size: 15.sp)
+                                  text: "Resend OTP",
+                                  txtColor: greenTextColor,
+                                  size: 18.sp,
+                                  weight: FontWeight.w500),
                             ],
                           ),
                         ),

@@ -26,7 +26,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
         assignId: true,
         builder: (ctrl) {
           return GestureDetector(
-            onTap: ()=> FocusManager.instance.primaryFocus?.unfocus(),
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
             child: SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -46,60 +46,67 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                       SizedBox(
                         height: height(context: context, value: 0.03),
                       ),
-                      styleText(text: "Forgot Password?",txtColor: Colors.black,weight: FontWeight.w500),
+                      styleText(
+                          text: "Forgot Password?",
+                          txtColor: Colors.black,
+                          weight: FontWeight.w500),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: styleText(text: "No worries we will assist you.",size:15.sp,txtColor: txtGreyShade),
+                        child: styleText(
+                            text: "No worries we will assist you.",
+                            size: 15.sp,
+                            txtColor: txtGreyShade),
                       ),
                       SizedBox(
                         height: height(context: context, value: 0.03),
                       ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          styleText(text: "Email",txtColor: txtGreyShade,size: 15.sp,weight: FontWeight.w500),
-                          Container(
-                            height:height(context: context, value: 0.063),
-                            width: width(context: context, value: 0.9),
-                            margin: EdgeInsets.symmetric(vertical: 8.h),
-                            child: TextFormField(
-                              keyboardType:TextInputType.emailAddress,
-                              controller: ctrl.resetEmail,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(10.h),
-                                hintText: "Enter your email",
-                                hintStyle: GoogleFonts.poppins(),
-                                enabledBorder:OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.r)
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    width: 2,
-                                    color: greenTextColor,
-                                  ),
-                                    borderRadius: BorderRadius.circular(15.r),
-                                )
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            styleText(
+                                text: "Email",
+                                txtColor: txtGreyShade,
+                                size: 15.sp,
+                                weight: FontWeight.w500),
+                            Container(
+                              height: height(context: context, value: 0.063),
+                              width: width(context: context, value: 0.9),
+                              margin: EdgeInsets.symmetric(vertical: 8.h),
+                              child: TextFormField(
+                                keyboardType: TextInputType.emailAddress,
+                                controller: ctrl.resetEmail,
+                                decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.all(10.h),
+                                    hintText: "Enter your email",
+                                    hintStyle: GoogleFonts.poppins(),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.r)),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        width: 2,
+                                        color: greenTextColor,
+                                      ),
+                                      borderRadius: BorderRadius.circular(15.r),
+                                    )),
                               ),
-                            ),
-                          )
-                        ],
+                            )
+                          ],
+                        ),
                       ),
-                    ),
                       Card(
                         elevation: 1,
                         child: Container(
-                          height:
-                          height(context: context, value: 0.06),
+                          height: height(context: context, value: 0.06),
                           width: width(context: context, value: 0.9),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10.r),
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                greenTextColor.withOpacity(0.5),
+                                color: greenTextColor.withOpacity(0.5),
                                 spreadRadius: -25,
                                 // How much the shadow spreads
                                 blurRadius: 10,
@@ -111,40 +118,41 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                           child: ElevatedButton(
                               style: ButtonStyle(
                                   backgroundColor:
-                                  MaterialStateProperty.all(
-                                      greenTextColor),
-                                  shape: MaterialStateProperty.all<
+                                      WidgetStateProperty.all(greenTextColor),
+                                  shape: WidgetStateProperty.all<
                                       RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
                                       borderRadius:
-                                      BorderRadius.circular(
-                                          8.0.r),
+                                          BorderRadius.circular(8.0.r),
                                     ),
                                   )),
-                              onPressed: () async{
-                                FocusManager.instance.primaryFocus
-                                    ?.unfocus();
-                                await Get.find<UserFormController>().sendResetOTP('reset');
+                              onPressed: () async {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                await Get.find<UserFormController>()
+                                    .sendResetOTP('reset');
                               },
                               child: styleText(
-                                  text:
-                                  "Send OTP",
+                                  text: "Send OTP",
                                   txtColor: Colors.white,
                                   size: textSize(value: 15.sp),
                                   weight: FontWeight.w500)),
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
-                        Get.off(()=>const LogInPage(),transition: Transition.rightToLeft);
+                        onTap: () {
+                          Get.off(() => const LogInPage(),
+                              transition: Transition.rightToLeft);
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(vertical: 50.h),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.arrow_back,color:txtGreyShade),
-                              styleText(text: "Back to log in",txtColor: txtGreyShade,size: 15.sp)
+                              Icon(Icons.arrow_back, color: txtGreyShade),
+                              styleText(
+                                  text: "Back to log in",
+                                  txtColor: txtGreyShade,
+                                  size: 15.sp)
                             ],
                           ),
                         ),

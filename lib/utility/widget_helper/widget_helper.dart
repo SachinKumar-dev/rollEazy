@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 
@@ -63,70 +62,30 @@ Widget txtFormField(
     {required context,
     required String text,
     TextEditingController? textType,
-    TextInputType type = TextInputType.name}) {
-  return Card(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-    elevation: 1,
-    child: Container(
-      height: height(context: context, value: 0.07),
-      width: width(context: context, value: 0.9),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: -22, // How much the shadow spreads
-            blurRadius: 10, // Softness of the shadow
-            offset: const Offset(-5, 28),
-          ),
-        ],
-      ),
-      child: TextField(
-        keyboardType: type,
-        controller: textType,
-        cursorColor: greenTextColor,
-        decoration: InputDecoration(
-          hintText: text,
-          hintStyle: GoogleFonts.poppins(fontSize: 15.sp, color: Colors.grey),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.r),
-            borderSide: const BorderSide(color: Colors.grey, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.r),
-            borderSide: BorderSide(color: greenTextColor, width: 2),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-//dot Text
-Widget dotText({required context, required String text, required Color color}) {
+    TextInputType type = TextInputType.text,
+    int length = 50}) {
   return Padding(
-    padding: EdgeInsets.only(
-      left: MediaQuery.of(context).size.width * 0.07,
-      top: MediaQuery.of(context).size.width * 0.03,
-    ),
-    child: Row(
-      children: [
-        Container(
-          height: height(context: context, value: 0.02),
-          width: height(context: context, value: 0.02),
-          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+    padding: EdgeInsets.symmetric(horizontal: 20.w),
+    child: TextField(
+      maxLength: length,
+      keyboardType: type,
+      controller: textType,
+      cursorColor: greenTextColor,
+      decoration: InputDecoration(
+        filled: true,
+        hintText: text,
+        hintStyle: GoogleFonts.poppins(fontSize: 15.sp, color: Colors.grey),
+        fillColor: Colors.white.withOpacity(0.3),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: const BorderSide(color: Colors.white),
         ),
-        Padding(
-          padding:
-              EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.04),
-          child: styleText(
-              text: text,
-              txtColor: txtGreyShade,
-              size: 15.sp,
-              weight: FontWeight.w500),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.black),
+          borderRadius: BorderRadius.circular(10.r),
         ),
-      ],
+      ),
+      style: const TextStyle(color: Colors.black),
     ),
   );
 }

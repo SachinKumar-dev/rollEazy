@@ -7,7 +7,10 @@ import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 import 'package:roll_eazy/views/auth_pages/registration_page/user_form.dart';
+import 'package:roll_eazy/views/auth_pages/registration_page/user_form_screen.dart';
 import 'package:roll_eazy/views/auth_pages/reset_password_page/otp_send_screen.dart';
+
+import '../../../controllers/navigation_ctrl/nav_ctrl.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -22,7 +25,7 @@ class _LogInPageState extends State<LogInPage> {
   //visibility
   void toggleVisibility() {
     setState(() {
-     isVisible=!isVisible;
+      isVisible = !isVisible;
     });
   }
 
@@ -229,20 +232,20 @@ class _LogInPageState extends State<LogInPage> {
                               ),
                               child: ElevatedButton(
                                   style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              greenTextColor),
-                                      shape: MaterialStateProperty.all<
+                                      backgroundColor: WidgetStateProperty.all(
+                                          greenTextColor),
+                                      shape: WidgetStateProperty.all<
                                           RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(8.0.r),
                                         ),
                                       )),
-                                  onPressed: () {
+                                  onPressed: () async {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                     ctrl.logInValidations();
+                                     Get.find<AuthService>().login();
                                   },
                                   child: styleText(
                                       text: "Sign in",
@@ -261,7 +264,7 @@ class _LogInPageState extends State<LogInPage> {
                 GestureDetector(
                     onTap: () {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      Get.to((const UserForm()),
+                      Get.to((const UserFormScreen()),
                           transition: Transition.rightToLeft);
                     },
                     child: styleText(

@@ -6,9 +6,9 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
-import 'package:roll_eazy/views/auth_pages/login_page/login_page.dart';
-import 'package:roll_eazy/views/homepage/detailed_screen.dart';
+import 'package:roll_eazy/views/homepage/vehicle_details_screen.dart';
 import 'package:roll_eazy/views/landing_page/landing_page.dart';
+import 'package:roll_eazy/views/homepage/VehicleList.dart';
 import 'package:roll_eazy/views/profile_page/profile_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,11 +26,10 @@ class _HomePageState extends State<HomePage> {
       _selectedIndex = index;
     });
     if (_selectedIndex == 2) {
-      if(Get.find<UserFormController>().isGuest.value==true){
-        Get.offAll(()=>const LandingPage());
-      }
-      else{
-        Get.to((const ProfilePage()),transition: Transition.rightToLeft);
+      if (Get.find<UserFormController>().isGuest.value == true) {
+        Get.offAll(() => const LandingPage());
+      } else {
+        Get.to((const ProfilePage()), transition: Transition.rightToLeft);
       }
       _selectedIndex = 0;
     }
@@ -268,191 +267,7 @@ class _HomePageState extends State<HomePage> {
                     txtColor: greenTextColor,
                     weight: FontWeight.w500),
               ),
-              GestureDetector(
-                onTap: () {
-                  Get.to((const MainScreen()),transition: Transition.rightToLeft);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 8.0),
-                  child: Stack(children: [
-                    Container(
-                      height: height(context: context, value: 0.4),
-                      width: width(context: context, value: 1),
-                      decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xff233329),
-                              Color(0xff3B4A42),
-                              Color(0xff708871),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(10.r)),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    styleText(
-                                        text: "Toyota Supra",
-                                        txtColor: Colors.white,
-                                        size: 14.sp),
-                                    Container(
-                                      height: height(
-                                          context: context, value: 0.03),
-                                      width:
-                                          width(context: context, value: 0.2),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.white, width: 1),
-                                          gradient: const LinearGradient(
-                                            colors: [
-                                              Color(0xff233329),
-                                              Color(0xff3B4A42),
-                                              Color(0xff708871),
-                                            ],
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(10.r)),
-                                      child: Center(
-                                        child: styleText(
-                                            text: "₹ 300/hr",
-                                            weight: FontWeight.w500,
-                                            size: 14.sp),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 10.0.h),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            height: height(
-                                                context: context,
-                                                value: 0.03),
-                                            width: width(
-                                                context: context, value: 0.2),
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.white,
-                                                    width: 1),
-                                                gradient:
-                                                    const LinearGradient(
-                                                  colors: [
-                                                    Color(0xff233329),
-                                                    Color(0xff3B4A42),
-                                                    Color(0xff708871),
-                                                  ],
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.r)),
-                                            child: Center(
-                                              child: styleText(
-                                                  text: "5 Trips",
-                                                  weight: FontWeight.w500,
-                                                  size: 12.sp),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            top: 8.0.h, left: 10.w),
-                                        child: const Icon(
-                                          Icons.favorite,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                          Container(
-                            margin: EdgeInsets.only(bottom: 25.h, left: 5.w),
-                            height: height(context: context, value: 0.044),
-                            width: width(context: context, value: 0.8),
-                            decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xff233329),
-                                    Color(0xff3B4A42),
-                                    Color(0xff708871),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                border:
-                                    Border.all(color: Colors.white, width: 2),
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5.r)),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceAround,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      AntDesign.setting_fill,
-                                      color: Colors.white,
-                                      size: 15,
-                                    ),
-                                    styleText(text: "Manual", size: 15.sp),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      AntDesign.car_fill,
-                                      color: Colors.white,
-                                      size: 15,
-                                    ),
-                                    styleText(text: "2 Seater", size: 15.sp),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.oil_barrel,
-                                      color: Colors.white,
-                                      size: 15,
-                                    ),
-                                    styleText(text: "Petrol", size: 15.sp),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Image.asset(
-                      "assets/logos/mainlogo.png",
-                    ),
-                  ]),
-                ),
-              ),
+              VehicleList(),
             ],
           ),
         ),

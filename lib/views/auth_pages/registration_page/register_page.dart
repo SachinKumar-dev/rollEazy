@@ -227,9 +227,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 child: ElevatedButton(
                                     style: ButtonStyle(
                                         backgroundColor:
-                                            MaterialStateProperty.all(
+                                            WidgetStateProperty.all(
                                                 greenTextColor),
-                                        shape: MaterialStateProperty.all<
+                                        shape: WidgetStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                             borderRadius:

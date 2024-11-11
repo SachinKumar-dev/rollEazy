@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart' hide MultipartFile, FormData;
 import 'package:google_fonts/google_fonts.dart';
@@ -14,16 +15,17 @@ import 'package:roll_eazy/views/auth_pages/login_page/login_page.dart';
 import 'package:roll_eazy/views/auth_pages/registration_page/email_verification.dart';
 import 'package:roll_eazy/views/homepage/home_screen.dart';
 import '../../models/user_model/user_model.dart';
+import '../../models/vehicle_model/vehicle_model.dart';
 import '../../services/flutter_secure_token/flutter_secure_storage.dart';
 import '../../views/auth_pages/registration_page/register_page.dart';
 import '../../views/auth_pages/reset_password_page/otp_verification_screen.dart';
 
 class UserFormController extends GetxController {
   final url = Get.find<ApiServices>();
+  final loggedInUser = Get.find<GlobalUserController>();
   final dio = Dio();
 
   //isGuestUser
-
   Rx<bool> isGuest = false.obs;
 
   //Text Controllers
@@ -47,15 +49,11 @@ class UserFormController extends GetxController {
   //LogIn
   final TextEditingController logEmail = TextEditingController();
   final TextEditingController logPassword = TextEditingController();
+  final TextEditingController gender = TextEditingController();
+  final TextEditingController license = TextEditingController();
 
   //profileImage
   File? profileImage;
-
-  //selected Gender
-  String? gender = "Male";
-
-  //selected drivingLicense
-  String? license = "Yes";
 
   //regex for gmail
   final RegExp gmailRegex = RegExp(
@@ -65,14 +63,13 @@ class UserFormController extends GetxController {
 /*----------------------------------------------Controllers-------------------------------------------------------*/
 // Helper function to centralize SnackBar
   void showSnackBar(String title, String message, Color txtColor) {
-    Get.back(); // Close any loading or previous dialogs
+    Get.back();
     Get.find<ImageController>().snackBar(title, message, txtColor: txtColor);
   }
 
 // Register User Function
   Future<bool> registerUser() async {
     final registerUrl = url.getRegisterUrl();
-
     try {
       // Prepare FormData for sending files and data
       final formData = FormData.fromMap({
@@ -82,8 +79,8 @@ class UserFormController extends GetxController {
         'userName': userName.text.trim(),
         'email': verifyRegistrationEmail.text.trim(),
         'password': password.text.trim(),
-        'gender': gender,
-        'drivingLicense': license,
+        'gender': gender.text.trim(),
+        'drivingLicense': license.text.trim(),
         'dob': dob.text.trim(),
         'mobileNumber': mobileNumber.text.trim(),
       });
@@ -94,6 +91,7 @@ class UserFormController extends GetxController {
         Get.back();
         showSnackBar("Success!", "Registered successfully", greenTextColor);
         print('User registered successfully: ${response.data}');
+        otpSent.value = false;
         return true;
       }
       return false;
@@ -146,16 +144,17 @@ class UserFormController extends GetxController {
           'password': logPassword.text.trim(),
         },
       );
-
       // Handle successful response (statusCode 200) in the try block
       if (response.statusCode == 200) {
         String accessToken = response.data['data']['accessToken'];
+        //need to add data to get storage for caching
+        //Get.find<GlobalUserController>().setToken(accessToken);
         Get.find<SecureToken>().saveToken(accessToken);
         //provide data to model
         User user = User.fromJson(response.data['data']['user']);
         //set global user
         Get.find<GlobalUserController>().setUser(user);
-
+        update();
         Get.back();
         Get.to(() => const HomePage(), transition: Transition.rightToLeft);
         return true;
@@ -172,7 +171,6 @@ class UserFormController extends GetxController {
             showSnackBar(
                 "Warning!", "User not found, register yourself", Colors.red);
             break;
-
           default:
             showSnackBar(
                 "Error!", "Something went wrong, try again later", Colors.red);
@@ -192,8 +190,11 @@ class UserFormController extends GetxController {
     }
   }
 
+  RxBool otpSent = false.obs;
+
   //send otp during user registration
   Future<bool> sendRegistrationOTP(String otpType) async {
+    //need to check first the email format too
     Get.dialog(
       Center(
         child: Lottie.asset('assets/images/loading.json'),
@@ -203,17 +204,26 @@ class UserFormController extends GetxController {
     final String sendOtpUrl = url.getSendOtpUrl();
     try {
       if (verifyRegistrationEmail.text.trim().isNotEmpty) {
-        final response = await dio.post(
-          sendOtpUrl,
-          data: {'email': verifyRegistrationEmail.text.trim(), 'type': otpType},
-        );
-        if (response.statusCode == 200) {
-          Get.back();
-          Get.find<ImageController>().snackBar(
-              "Success!", "Otp sent successfully",
-              txtColor: greenTextColor);
-          print("success otp sent");
-          return true;
+        if (gmailRegex.hasMatch(verifyRegistrationEmail.text.trim())) {
+          final response = await dio.post(
+            sendOtpUrl,
+            data: {
+              'email': verifyRegistrationEmail.text.trim(),
+              'type': otpType
+            },
+          );
+          if (response.statusCode == 200) {
+            Get.back();
+            Get.find<ImageController>().snackBar(
+                "Success!", "Otp sent successfully",
+                txtColor: greenTextColor);
+            print("success otp sent");
+            otpSent.value = true;
+            return true;
+          }
+        } else {
+          showSnackBar("Warning!", "Invalid email format", Colors.red);
+          return false;
         }
       } else {
         Get.back();
@@ -228,13 +238,13 @@ class UserFormController extends GetxController {
         print("inside otp sent error status code is ${e.response?.statusCode}");
         var response = e.response?.statusCode;
         var errorMessage = e.response?.data['message'];
-        print("errorMessage is ${errorMessage}");
+        print("errorMessage is $errorMessage");
         if (response == 404) {
           Get.back();
           Get.find<ImageController>().snackBar(
-              "Warning!", "User not registered",
+              "Oops!", "Error while sending the mail",
               txtColor: Colors.red);
-          print("user not registered unable to sent mail");
+          print("Error while sending the mail");
           return false;
         }
       } else {
@@ -294,7 +304,7 @@ class UserFormController extends GetxController {
         print("inside otp sent error status code is ${e.response?.statusCode}");
         var response = e.response?.statusCode;
         var errorMessage = e.response?.data['message'];
-        print("errorMessage is ${errorMessage}");
+        print("errorMessage is $errorMessage");
         if (response == 404) {
           Get.back();
           Get.find<ImageController>().snackBar(
@@ -378,7 +388,7 @@ class UserFormController extends GetxController {
       }
     } catch (error) {
       Get.back();
-      print("something went wrong! ${error}");
+      print("something went wrong! $error");
     }
   }
 
@@ -392,6 +402,7 @@ class UserFormController extends GetxController {
     );
     final String emailVerify = url.getEmailVerificationUrl();
     try {
+      print(registrationOTP.text.trim());
       final response = await dio.post(emailVerify, data: {
         "email": verifyRegistrationEmail.text.trim(),
         "user_otp": registrationOTP.text.trim()
@@ -400,12 +411,13 @@ class UserFormController extends GetxController {
       if (response.statusCode == 200) {
         Get.snackbar("Success", "Email verified successfully!",
             colorText: greenTextColor);
-        Get.offAll(()=>const RegisterPage());
+        Get.offAll(() => const RegisterPage());
       }
     } on DioException catch (exc) {
       var resStatus = exc.response?.statusCode;
       print(resStatus);
       if (exc.response != null && resStatus == 404) {
+        print("invalid otp $resStatus");
         Get.back();
         Get.find<ImageController>()
             .snackBar("Warning!", "Invalid otp entered", txtColor: Colors.red);
@@ -420,7 +432,7 @@ class UserFormController extends GetxController {
       }
     } catch (error) {
       Get.back();
-      print("something went wrong! ${error}");
+      print("something went wrong! $error");
     }
   }
 
@@ -434,20 +446,18 @@ class UserFormController extends GetxController {
     );
     String resendUrl = url.getResendOTPUrl();
     try {
-     if(verifyRegistrationEmail.text.trim().isNotEmpty){
-       final response = await dio.post(resendUrl,
-           data: {"email": verifyRegistrationEmail.text.trim()});
-
-       if (response.statusCode == 200) {
-         Get.back();
-         Get.snackbar("Success", "Otp sent successfully");
-
-       }
-     }
-     else{
-       Get.back();
-       Get.snackbar("Warning!","Email is required",colorText: Colors.red);
-     }
+      if (verifyRegistrationEmail.text.trim().isNotEmpty) {
+        final response = await dio.post(resendUrl,
+            data: {"email": verifyRegistrationEmail.text.trim()});
+        if (response.statusCode == 200) {
+          Get.back();
+          Get.snackbar("Success", "Otp sent successfully",
+              colorText: greenTextColor);
+        }
+      } else {
+        Get.back();
+        Get.snackbar("Warning!", "Email is required", colorText: Colors.red);
+      }
     } on DioException catch (exc) {
       var resStatus = exc.response?.statusCode;
       print(resStatus);
@@ -464,7 +474,7 @@ class UserFormController extends GetxController {
       }
     } catch (error) {
       Get.back();
-      print("something went wrong! ${error}");
+      print("something went wrong! $error");
     }
   }
 
@@ -478,18 +488,19 @@ class UserFormController extends GetxController {
     );
     String resendUrl = url.getResendOTPUrl();
     try {
-        if(resetEmail.text.trim().isNotEmpty){
-          final response =
-          await dio.post(resendUrl, data: {"email": resetEmail.text.trim()});
+      if (resetEmail.text.trim().isNotEmpty) {
+        final response =
+            await dio.post(resendUrl, data: {"email": resetEmail.text.trim()});
 
-          if (response.statusCode == 200) {
-            Get.snackbar("Success", "Otp sent successfully");
-          }
-        }
-        else{
+        if (response.statusCode == 200) {
           Get.back();
-          Get.snackbar("Warning!", "Email is required",colorText: Colors.red);
+          Get.snackbar("Success", "Otp sent successfully",
+              colorText: greenTextColor);
         }
+      } else {
+        Get.back();
+        Get.snackbar("Warning!", "Email is required", colorText: Colors.red);
+      }
     } on DioException catch (exc) {
       var resStatus = exc.response?.statusCode;
       print(resStatus);
@@ -505,12 +516,13 @@ class UserFormController extends GetxController {
       }
     } catch (error) {
       Get.back();
-      print("something went wrong! ${error}");
+      print("something went wrong! $error");
     }
   }
 
   // Controller to log out the user
   Future<void> logOut() async {
+    print("inisde log out fun");
     // Show loading dialog
     Get.dialog(
       Center(
@@ -518,9 +530,9 @@ class UserFormController extends GetxController {
       ),
       barrierDismissible: false,
     );
-
     String secureUrl = url.getSecureRoutedUrl();
     final token = await Get.find<SecureToken>().getToken();
+    print('token is during logout $token');
     try {
       // Add the token to headers for authorization
       final response = await dio.post(
@@ -534,15 +546,10 @@ class UserFormController extends GetxController {
 
       // First, check if the user is valid
       if (response.statusCode == 200) {
-
-        // User found, now I can remove the token
-        await Get.find<SecureToken>().deleteToken();
-
-
-        // Navigate the user to the login page
         Get.offAll(() => const LogInPage());
       }
     } on DioException catch (e) {
+      print("excpn");
       // Handle specific status codes
       if (e.response?.statusCode != null) {
         if (e.response?.statusCode == 401) {
@@ -560,8 +567,6 @@ class UserFormController extends GetxController {
 
   //delete account
   Future<void> deleteAccount() async {
-    print("${Get.find<GlobalUserController>().user.value?.id}");
-    //verify user first
     //Show loading dialog
     Get.dialog(
       Center(
@@ -571,7 +576,6 @@ class UserFormController extends GetxController {
     );
 
     String deleteAccountUrl = url.getDeleteAccountRoutedUrl();
-    print("url is $deleteAccountUrl");
     final token = await Get.find<SecureToken>().getToken();
     try {
       // Add the token to headers for authorization
@@ -611,7 +615,7 @@ class UserFormController extends GetxController {
     }
   }
 
-  //show dialog
+  //show delete account dialog
   void showDeleteConfirmationDialog() {
     Get.defaultDialog(
       title: "Delete Account!",
@@ -619,13 +623,11 @@ class UserFormController extends GetxController {
           fontSize: 15.sp, color: Colors.red, fontWeight: FontWeight.w500),
       middleText: "Are you sure you want to delete your account?",
       middleTextStyle: GoogleFonts.poppins(),
-      barrierDismissible: false,
+      barrierDismissible: true,
       textCancel: "No",
       textConfirm: "Yes",
       confirmTextColor: Colors.white,
-      onCancel: () {
-        Get.back();
-      },
+      onCancel: () => Get.back(),
       onConfirm: () async {
         await deleteAccount();
       },
@@ -638,11 +640,13 @@ class UserFormController extends GetxController {
     bool isImageSelected = Get.find<ImageController>().isImageSelected.value;
     if (userName.text.trim().isEmpty ||
         mobileNumber.text.trim().isEmpty ||
-        dob.text.trim().isEmpty) {
+        dob.text.trim().isEmpty ||
+        gender.text.trim().isEmpty ||
+        license.text.trim().isEmpty) {
       Get.find<ImageController>().snackBar(
           "Warning!", "All fields are mandatory",
           txtColor: Colors.red);
-    } else if (license == "No") {
+    } else if (license.text.trim() == "No") {
       Get.find<ImageController>().snackBar(
           "Warning!", "Driving license is mandatory",
           txtColor: Colors.red);
@@ -726,6 +730,7 @@ class UserFormController extends GetxController {
       barrierDismissible: false,
     );
     if (logEmail.text.trim().isEmpty || logPassword.text.trim().isEmpty) {
+      HapticFeedback.lightImpact();
       Get.back();
       Get.find<ImageController>().snackBar(
           "Warning!", "All fields are mandatory",
@@ -761,5 +766,93 @@ class UserFormController extends GetxController {
       return false;
     }
     return true;
+  }
+
+  /*--------------------Profile Editing user details---------*/
+
+  final TextEditingController pNumber = TextEditingController();
+  final TextEditingController pName = TextEditingController();
+  final TextEditingController pEmail = TextEditingController();
+  final TextEditingController pDOB = TextEditingController();
+
+  RxBool isFiled = false.obs;
+
+  //to check whether the fields are empty or not
+  void textFieldCheck() {
+    pName.addListener(_checkAllFieldsFilled);
+    pEmail.addListener(_checkAllFieldsFilled);
+    pDOB.addListener(_checkAllFieldsFilled);
+  }
+
+  // Private function to update isFiled based on all fields
+  void _checkAllFieldsFilled() {
+    isFiled.value =
+        pName.text.isNotEmpty || pEmail.text.isNotEmpty || pDOB.text.isNotEmpty;
+  }
+
+  //edit user details
+  Future<void> updateDetails() async {
+    final token = await Get.find<SecureToken>().getToken();
+    final String updateUrl = url.getUpdateProfileUrl();
+    // Show loading dialog
+    Get.dialog(
+      Center(
+        child: Lottie.asset('assets/images/loading.json'),
+      ),
+      barrierDismissible: false,
+    );
+
+    try {
+      // Validate email format only if email field is not empty
+      if (pEmail.text.trim().isNotEmpty &&
+          !gmailRegex.hasMatch(pEmail.text.trim())) {
+        showSnackBar("Warning!", "Invalid email format", Colors.red);
+        return;
+      }
+
+      // Prepare data to send, assigning null for any empty fields
+      final data = {
+        'id': loggedInUser.user.value?.id,
+        'username': pName.text.trim().isNotEmpty ? pName.text.trim() : null,
+        'dob': pDOB.text.trim().isNotEmpty ? pDOB.text.trim() : null,
+        'email': pEmail.text.trim().isNotEmpty ? pEmail.text.trim() : null,
+      };
+      // Make API request
+      final response = await dio.post(
+        updateUrl,
+        data: data,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      // Handle successful response
+      if (response.statusCode == 200) {
+        showSnackBar(
+            "Success!", "Details updated successfully", greenTextColor);
+        User user = User.fromJson(response.data['data']['user']);
+        Get.find<GlobalUserController>().setUser(user);
+        // Clear text fields after update
+        pEmail.clear();
+        pName.clear();
+        pDOB.clear();
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode != null) {
+        if (e.response?.statusCode == 401) {
+          print('if part m ${e.response?.statusCode}');
+          showSnackBar("Warning!", "Unauthorized user", Colors.red);
+        }
+      }
+      else {
+        print('else part m ${e.response?.statusCode}');
+        showSnackBar("Oops!", "Network error", Colors.red);
+      }
+    } catch (error) {
+      print("Something went wrong! $error");
+      showSnackBar("Error", "Something went wrong!", Colors.red);
+    }
   }
 }
