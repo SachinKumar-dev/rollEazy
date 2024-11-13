@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import '../../models/user_model/user_model.dart';
 
 class GlobalUserController extends GetxController {
+
   Rx<User?> user = Rx<User?>(null);
   final GetStorage storage = GetStorage();
 

@@ -6,6 +6,17 @@ import 'package:roll_eazy/services/api_services/api_services.dart';
 import '../../models/vehicle_model/vehicle_model.dart';
 
 class VehicleController extends GetxController {
+  final GetStorage storage = GetStorage();
+
+  //for storing vehicle ids
+  final vehicleId= "".obs;
+
+  // Cache the vehicles data in an RxList
+  RxList<Vehicle> vehicleCache = <Vehicle>[].obs;
+
+  //detailed vehicle data
+  var detailedVehicle = Rx<DetailedVehicle?>(null);
+
   final url = Get.find<ApiServices>();
   final dio = Dio();
 
@@ -15,19 +26,10 @@ class VehicleController extends GetxController {
     _loadVehicle();
   }
 
-  final GetStorage storage = GetStorage();
-
-  RxString vehicleId= "".obs;
-
-  // Cache the vehicles data in an RxList
-  RxList<Vehicle> vehicleCache = <Vehicle>[].obs;
-
-  //detailed vehicle data
-  var detailedVehicle = Rx<DetailedVehicle?>(null);
-
   // Load cached vehicle data from GetStorage
   void _loadVehicle() {
     String? storedData = storage.read('vehicle');
+    print("storedData is ${storedData}");
     if (storedData != null) {
       List<dynamic> jsonData = jsonDecode(storedData);
       vehicleCache.value =
@@ -51,10 +53,13 @@ class VehicleController extends GetxController {
       if (response.statusCode == 200) {
         // Assuming response.data['data'] contains the list of vehicles
         var vehicleData = response.data['data'];
+
         // Convert the 'data' to a List of Vehicle objects
         listOfVehicles = (vehicleData as List).map((item) {
           return Vehicle.fromJson(item);
         }).toList();
+
+        print("list of vehicles inside getAllvehicles is ${response.data['data']}");
         // Call the setVehicle method to cache the vehicles data
         setVehicle(listOfVehicles);
       } else {
@@ -67,22 +72,25 @@ class VehicleController extends GetxController {
 
   //fetch data based on object id
   Future<void> getDetailedData({required String id}) async {
-    final getDetailedDatUrl = url.getDetailedVehicleUrl();  // Your base URL
+    final getDetailedDataUrl = url.getDetailedVehicleUrl();  // Your base URL
     try {
       // Make the request
       final response = await dio.get(
-        getDetailedDatUrl,
-        queryParameters: {'vehicleId': id},
+        getDetailedDataUrl,
+        data: {
+          'veichleId':id
+        }
       );
 
       if (response.statusCode == 200) {
         // Parse the response
         final detailedVehicle = DetailedVehicle.fromJson(response.data['data']);
-
-        print("data from detailed data is ${detailedVehicle}");
-
+        print("detailed vehicle is ${detailedVehicle}");
+        print("data from detailed data is ${detailedVehicle.currentKm}");
+        print("res is ${response.data['data']}");
         // Store the fetched data - assuming you're using GetX for state management
         setDetailedVehicle(detailedVehicle);
+
 
         // Optionally, show the data in your UI (GetX will handle the reactive part)
         // If using setState, set the state here

@@ -26,9 +26,8 @@ class _VehicleListState extends State<VehicleList> {
             final Vehicle = vehicle[index];
             return GestureDetector(
               onTap: () {
-                Get.to((MainScreen()), transition: Transition.rightToLeft);
-                //store id
-                Vehicle.id = Get.find<VehicleController>().vehicleId.value;
+                Get.find<VehicleController>().vehicleId.value=Vehicle.id;
+                Get.to(()=> const MainScreen(),transition: Transition.rightToLeft);
               },
               child: Padding(
                 padding:
@@ -189,8 +188,7 @@ class _VehicleListState extends State<VehicleList> {
                         child: SizedBox(
                           width: width(context: context, value: 0.8),
                           height: height(context: context, value: 0.3),
-                          child: Image.asset(
-                            "assets/logos/mainlogo.png",
+                          child: Image.network(Vehicle.coverImage,
                             fit: BoxFit.contain,
                           ),
                         ),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:roll_eazy/controllers/vehicle_controller/vehicle_controller.dart';
-import 'package:roll_eazy/models/vehicle_model/vehicle_model.dart';
 import 'package:roll_eazy/utility/widget_helper/expandable_helper.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
@@ -18,13 +17,17 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin {
+  final vehicleController = Get.put(VehicleController());
 
-
-  final vehicleController = Get.find<VehicleController>();
   @override
-  void initState(){
-    Get.find<VehicleController>().getDetailedData( id: Get.find<VehicleController>().vehicleId.value);
+  void initState() {
     super.initState();
+    Future.microtask(() async {
+      if (vehicleController.vehicleId.isNotEmpty) {
+        await vehicleController.getDetailedData(
+            id: vehicleController.vehicleId.value);
+      }
+    });
   }
 
   // Page view logic
@@ -58,30 +61,44 @@ class _MainScreenState extends State<MainScreen>
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 children: [
                   ExpandableHelper(
+                      expandText:
+                          vehicleController.detailedVehicle.value?.currentKm ?? "NA",
                       path: "assets/logos/road.png",
                       text: "Current KM",
                       colorText: txtGreyShade,
                       size: 16),
                   const Divider(),
                   ExpandableHelper(
+                      expandText: "₹ ${vehicleController
+                          .detailedVehicle.value?.deposit ?? "NA"
+                          .toString()}",
                       path: "assets/logos/deposit.png",
                       text: "Deposit",
                       colorText: txtGreyShade,
                       size: 16),
                   const Divider(),
                   ExpandableHelper(
+                      expandText:"₹ ${vehicleController
+                          .detailedVehicle.value?.extraPerHour
+                          .toString()}",
                       path: "assets/logos/save-money.png",
                       text: "Extra Charges",
                       colorText: txtGreyShade,
                       size: 16),
                   const Divider(),
                   ExpandableHelper(
+                      expandText: vehicleController
+                          .detailedVehicle.value!.reviews
+                          .toString(),
                       path: "assets/logos/rating.png",
                       text: "Reviews",
                       colorText: txtGreyShade,
                       size: 16),
                   const Divider(),
                   ExpandableHelper(
+                      expandText: vehicleController
+                          .detailedVehicle.value!.nonFunctionalParts
+                          .toString(),
                       path: "assets/logos/hanging.png",
                       text: "Non-Functional Parts",
                       colorText: txtGreyShade,
@@ -161,3 +178,5 @@ class _MainScreenState extends State<MainScreen>
     );
   }
 }
+
+//need to change the review page and non fun parts as they are list......

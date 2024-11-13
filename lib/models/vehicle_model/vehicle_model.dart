@@ -1,6 +1,6 @@
 class Vehicle {
-  late final String id;
-
+  final String coverImage;
+  final String id;
   final String category;
   final String vehicleName;
   final String vehicleNumber;
@@ -8,10 +8,10 @@ class Vehicle {
   final bool availability;
   final int pricePerHour;
   final String gear;
-
   final String fuel;
 
   Vehicle({
+    required this.coverImage,
     required this.id,
     required this.category,
     required this.vehicleName,
@@ -26,6 +26,7 @@ class Vehicle {
   factory Vehicle.fromJson(Map<String, dynamic> json) {
     return Vehicle(
       id: json['_id'],
+      coverImage: json['cover_image'],
       category: json['category'],
       vehicleName: json['vehicle_name'],
       vehicleNumber: json['vehicle_number'],
@@ -40,6 +41,7 @@ class Vehicle {
   // Convert Vehicle object to JSON
   Map<String, dynamic> toJson() {
     return {
+      'cover_image':coverImage,
       '_id': id,
       'category': category,
       'vehicle_name': vehicleName,
@@ -56,9 +58,9 @@ class Vehicle {
 //detailed vehicle model
 
 class DetailedVehicle {
-  final int deposit;
-  final String currentKm;
-  final int extraPerHour;
+  final int deposit;  //string
+  final String currentKm; // 3 KM or just 3 choose one also either String or Int make it common
+  final int extraPerHour; //string
   final List<Review> reviews;
   final List<String> demoImages;
   final List<String> nonFunctionalParts;

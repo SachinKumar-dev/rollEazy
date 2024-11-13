@@ -5,10 +5,12 @@ class User {
   final String? mobileNumber;
   final String? gender;
   final String? dob;
+  final int? totalTrips;
   final String? drivingLicense;
   final String? profileImage;
 
   User({
+    this.totalTrips,
     this.id,
     this.userName,
     this.email,
@@ -22,6 +24,7 @@ class User {
   //making a json file for  caching
   Map<String, dynamic> toJson() => {
     '_id': id,
+    'total_trips':totalTrips,
     'userName': userName,
     'email': email,
     'mobileNumber': mobileNumber,
@@ -35,6 +38,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['_id'] ?? '',
+      totalTrips: json['total_trips'] ?? '',
       userName: json['userName'] ?? '',
       email: json['email'] ?? '',
       mobileNumber: json['mobileNumber'] ?? '',

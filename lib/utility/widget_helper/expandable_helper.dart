@@ -10,10 +10,12 @@ class ExpandableHelper extends StatefulWidget {
   final String text;
   final int size;
   final Color colorText;
+  final String expandText;
 
   const ExpandableHelper(
       {super.key,
       required this.path,
+      required this.expandText,
       required this.size,
       required this.colorText,
       required this.text});
@@ -25,24 +27,7 @@ class ExpandableHelper extends StatefulWidget {
 class _APPState extends State<ExpandableHelper> {
 
   final ExpandableController _controller = ExpandableController();
-  //fetch here ctrl nd its data
-  //detailedVehicle
   final vehicleController = Get.find<VehicleController>();
-  String text='';
-
-  @override
-  void initState() {
-    //here the error is unable to fetch the data  null error ........
-    final detailedVehicle = vehicleController.detailedVehicle.value!;
-    print("data inside expandable helper initstate $detailedVehicle");
-    setState(() {
-      text=detailedVehicle.currentKm;
-    });
-    print("text is inside exp helper ${text}");
-    super.initState();
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +53,8 @@ class _APPState extends State<ExpandableHelper> {
           Expandable(
             collapsed: Container(),
             expanded: customContainer(
-                text:text
+                context:context,
+                text:widget.expandText
                  ),
           ),
         ],
@@ -78,8 +64,10 @@ class _APPState extends State<ExpandableHelper> {
 }
 
 // Expanded content container
-Widget customContainer({required String text}) {
+Widget customContainer({required String text,required BuildContext context}) {
   return Container(
+    width: double.infinity,
+    height: height(context: context,value: 0.1),
     decoration: BoxDecoration(
       color: Colors.green[100],
       borderRadius: BorderRadius.circular(12),
@@ -90,13 +78,14 @@ Widget customContainer({required String text}) {
     ),
     padding: const EdgeInsets.all(16),
     child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           text,
           style: TextStyle(fontSize: 16.sp),
         ),
-        const SizedBox(height: 10),
-        const Text("Add more content here if needed."),
+        // const SizedBox(height: 10),
+        // const Text("Add more content here if needed."),
       ],
     ),
   );
