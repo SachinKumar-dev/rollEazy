@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:roll_eazy/controllers/navigation_ctrl/nav_ctrl.dart';
 import 'package:roll_eazy/controllers/user_form_ctrl/global_user.dart';
+import 'package:roll_eazy/views/homepage/dummyHomepage.dart';
 import 'package:roll_eazy/views/homepage/home_screen.dart';
 import 'package:roll_eazy/views/landing_page/landing_page.dart';
 
@@ -30,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen>
     //Navigate based on the login status
     Timer(const Duration(seconds: 1), () {
       if (isLoggedIn) {
-        Get.to(() => const HomePage(), transition: Transition.rightToLeft);
+        Get.to(() => const DummyHomepage(), transition: Transition.rightToLeft);
       } else {
         Get.to(() => const LandingPage(), transition: Transition.rightToLeft);
       }

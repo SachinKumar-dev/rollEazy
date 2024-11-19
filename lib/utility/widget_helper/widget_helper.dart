@@ -29,7 +29,7 @@ Text styleText(
     {required String text,
     double size = 20.0,
     txtColor = Colors.white,
-    FontWeight weight = FontWeight.normal}) {
+    FontWeight weight = FontWeight.normal, Color color=Colors.white}) {
   return Text(
     text,
     style: GoogleFonts.poppins(

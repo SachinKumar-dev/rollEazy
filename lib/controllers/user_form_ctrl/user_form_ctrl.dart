@@ -19,6 +19,8 @@ import '../../models/vehicle_model/vehicle_model.dart';
 import '../../services/flutter_secure_token/flutter_secure_storage.dart';
 import '../../views/auth_pages/registration_page/register_page.dart';
 import '../../views/auth_pages/reset_password_page/otp_verification_screen.dart';
+import '../navigation_ctrl/nav_ctrl.dart';
+import '../vehicle_controller/vehicle_controller.dart';
 
 class UserFormController extends GetxController {
   final url = Get.find<ApiServices>();
@@ -144,18 +146,17 @@ class UserFormController extends GetxController {
           'password': logPassword.text.trim(),
         },
       );
-      // Handle successful response (statusCode 200) in the try block
       if (response.statusCode == 200) {
         String accessToken = response.data['data']['accessToken'];
         //need to add data to get storage for caching
-        //Get.find<GlobalUserController>().setToken(accessToken);
         Get.find<SecureToken>().saveToken(accessToken);
         //provide data to model
         User user = User.fromJson(response.data['data']['user']);
+        print(user);
         //set global user
         Get.find<GlobalUserController>().setUser(user);
         update();
-        Get.back();
+        await Get.find<VehicleController>().getAllVehicles();
         Get.to(() => const HomePage(), transition: Transition.rightToLeft);
         return true;
       }
@@ -185,6 +186,8 @@ class UserFormController extends GetxController {
       }
       return false;
     } catch (e) {
+      print("why me");
+      Get.back();
       print('Unexpected error: $e');
       return false;
     }
@@ -546,6 +549,9 @@ class UserFormController extends GetxController {
 
       // First, check if the user is valid
       if (response.statusCode == 200) {
+        //we can call all logout  funs here
+        Get.find<AuthService>().logout();
+        await Get.find<SecureToken>().deleteToken();
         Get.offAll(() => const LogInPage());
       }
     } on DioException catch (e) {
@@ -592,6 +598,7 @@ class UserFormController extends GetxController {
       // First, check if the user is valid
       if (response.statusCode == 200) {
         // Navigate the user to the login page
+        await Get.find<SecureToken>().deleteToken();
         showSnackBar(
             "Success!", "Account deleted successfully", greenTextColor);
         Get.offAll(() => const LogInPage());
@@ -834,6 +841,7 @@ class UserFormController extends GetxController {
             "Success!", "Details updated successfully", greenTextColor);
         User user = User.fromJson(response.data['data']['user']);
         Get.find<GlobalUserController>().setUser(user);
+        Get.find<GlobalUserController>().updateUser((response.data['data']['user']));
         // Clear text fields after update
         pEmail.clear();
         pName.clear();

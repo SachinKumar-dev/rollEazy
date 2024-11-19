@@ -194,8 +194,6 @@ class _ProfilePageState extends State<ProfilePage> {
               GestureDetector(
                 onTap: () async {
                   await Get.find<UserFormController>().logOut();
-                   Get.find<AuthService>().logout();
-                   await Get.find<SecureToken>().deleteToken();
                 },
                 child: Container(
                   margin: EdgeInsets.only(

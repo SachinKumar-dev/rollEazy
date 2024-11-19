@@ -34,4 +34,23 @@ class GlobalUserController extends GetxController {
     storage.remove('user');
   }
 
+  // Update specific fields of the user and save changes
+  void updateUser(Map<String, dynamic> updatedFields) {
+    if (user.value != null) {
+      // Convert user to a Map, update fields, and recreate User object
+      Map<String, dynamic> currentUser = user.value!.toJson();
+      updatedFields.forEach((key, value) {
+        if (currentUser.containsKey(key)) {
+          currentUser[key] = value;
+        }
+      });
+
+      user.value = User.fromJson(currentUser); // Update reactive user
+      storage.write('user', jsonEncode(user.value!.toJson())); // Persist to storage
+      print("updated user is ${storage.read("user")}");
+    } else {
+      print("No user is currently logged in to update.");
+    }
+  }
+
 }

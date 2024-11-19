@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:roll_eazy/services/api_services/api_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/vehicle_model/vehicle_model.dart';
 
 class VehicleController extends GetxController {
@@ -15,7 +16,7 @@ class VehicleController extends GetxController {
   RxList<Vehicle> vehicleCache = <Vehicle>[].obs;
 
   //detailed vehicle data
-  var detailedVehicle = Rx<DetailedVehicle?>(null);
+  // var detailedVehicle = Rx<DetailedVehicle?>(null);
 
   final url = Get.find<ApiServices>();
   final dio = Dio();
@@ -27,7 +28,7 @@ class VehicleController extends GetxController {
   }
 
   // Load cached vehicle data from GetStorage
-  void _loadVehicle() {
+  void _loadVehicle(){
     String? storedData = storage.read('vehicle');
     print("storedData is ${storedData}");
     if (storedData != null) {
@@ -63,6 +64,7 @@ class VehicleController extends GetxController {
         // Call the setVehicle method to cache the vehicles data
         setVehicle(listOfVehicles);
       } else {
+        setVehicle(listOfVehicles);
         print('Failed to load vehicles, status code: ${response.statusCode}');
       }
     } catch (e) {
@@ -71,45 +73,52 @@ class VehicleController extends GetxController {
   }
 
   //fetch data based on object id
-  Future<void> getDetailedData({required String id}) async {
-    final getDetailedDataUrl = url.getDetailedVehicleUrl();  // Your base URL
+  Future<DetailedVehicle?> getDetailedData({required String id}) async {
+    final getDetailedDataUrl = url.getDetailedVehicleUrl(); // Your base URL
+
     try {
-      // Make the request
+      // Attempt to fetch data from the API
       final response = await dio.get(
         getDetailedDataUrl,
-        data: {
-          'veichleId':id
-        }
+       data:{
+          'veichleId': id},
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && response.data != null) {
         // Parse the response
         final detailedVehicle = DetailedVehicle.fromJson(response.data['data']);
-        print("detailed vehicle is ${detailedVehicle}");
-        print("data from detailed data is ${detailedVehicle.currentKm}");
-        print("res is ${response.data['data']}");
-        // Store the fetched data - assuming you're using GetX for state management
-        setDetailedVehicle(detailedVehicle);
-
-
-        // Optionally, show the data in your UI (GetX will handle the reactive part)
-        // If using setState, set the state here
+        // Cache the data for offline use
+        await cacheDetailedVehicle(response.data['data']);
+        return detailedVehicle;
       } else {
-        // Handle failure response
         throw Exception('Failed to fetch vehicle details');
       }
     } on DioException catch (e) {
       print('DioException: ${e.message}');
+      // Attempt to load cached data
+      final cachedData = await loadCachedDetailedVehicle();
+      if (cachedData != null) {
+        return DetailedVehicle.fromJson(cachedData);
+      }
+      rethrow; // Re-throw if no cache is available
     } catch (error) {
       print('Error: $error');
+      return null;
     }
   }
 
-  // Method to set the detailed vehicle data
-  void setDetailedVehicle(DetailedVehicle vehicle) {
-    detailedVehicle.value = vehicle;
-    print("detailedVehicle data is from RX${detailedVehicle.value}");
+// Cache the detailed vehicle data
+  Future<void> cacheDetailedVehicle(Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('detailed_vehicle', jsonEncode(data));
   }
 
+// Load cached detailed vehicle data
+  Future<Map<String, dynamic>?> loadCachedDetailedVehicle() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString('detailed_vehicle');
+    print(data);
+    return data != null ? jsonDecode(data) as Map<String, dynamic> : null;
+  }
 
 }

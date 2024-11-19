@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:roll_eazy/controllers/vehicle_controller/vehicle_controller.dart';
-import 'package:roll_eazy/utility/widget_helper/expandable_helper.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
+import 'package:roll_eazy/utility/widget_helper/expandable_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 
 class MainScreen extends StatefulWidget {
@@ -18,17 +18,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin {
   final vehicleController = Get.put(VehicleController());
-
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() async {
-      if (vehicleController.vehicleId.isNotEmpty) {
-        await vehicleController.getDetailedData(
-            id: vehicleController.vehicleId.value);
-      }
-    });
-  }
 
   // Page view logic
   int pageLength = 3;
@@ -43,83 +32,108 @@ class _MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: 16.h),
-            ExpandablePageView(
-              onPageChanged: _onPageChanged,
-              children: [
-                pageView(context, "assets/logos/mainlogo.png"),
-                pageView(context, "assets/logos/mainlogo.png"),
-                pageView(context, "assets/logos/mainlogo.png"),
-              ],
-            ),
-            SizedBox(height: 16.h),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
+      body: FutureBuilder(
+        future: vehicleController.getDetailedData(
+            id: vehicleController.vehicleId.value),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Show shimmer or loading indicator
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            // Handle error case
+            return Center(
+              child: styleText(
+                text: "Oops, something went wrong!",
+                txtColor: Colors.black,
+              ),
+            );
+          } else if (snapshot.hasData) {
+            // Use snapshot.data to fetch and display the data
+            final data = snapshot.data;
+            return SafeArea(
+              child: Column(
                 children: [
-                  ExpandableHelper(
-                      expandText:
-                          vehicleController.detailedVehicle.value?.currentKm ?? "NA",
-                      path: "assets/logos/road.png",
-                      text: "Current KM",
-                      colorText: txtGreyShade,
-                      size: 16),
-                  const Divider(),
-                  ExpandableHelper(
-                      expandText: "₹ ${vehicleController
-                          .detailedVehicle.value?.deposit ?? "NA"
-                          .toString()}",
-                      path: "assets/logos/deposit.png",
-                      text: "Deposit",
-                      colorText: txtGreyShade,
-                      size: 16),
-                  const Divider(),
-                  ExpandableHelper(
-                      expandText:"₹ ${vehicleController
-                          .detailedVehicle.value?.extraPerHour
-                          .toString()}",
-                      path: "assets/logos/save-money.png",
-                      text: "Extra Charges",
-                      colorText: txtGreyShade,
-                      size: 16),
-                  const Divider(),
-                  ExpandableHelper(
-                      expandText: vehicleController
-                          .detailedVehicle.value!.reviews
-                          .toString(),
-                      path: "assets/logos/rating.png",
-                      text: "Reviews",
-                      colorText: txtGreyShade,
-                      size: 16),
-                  const Divider(),
-                  ExpandableHelper(
-                      expandText: vehicleController
-                          .detailedVehicle.value!.nonFunctionalParts
-                          .toString(),
-                      path: "assets/logos/hanging.png",
-                      text: "Non-Functional Parts",
-                      colorText: txtGreyShade,
-                      size: 16),
+                  SizedBox(height: 16.h),
+                  // PageView for images
+                  ExpandablePageView(
+                    onPageChanged: _onPageChanged,
+                    children: [
+                      pageView(context, "assets/logos/mainlogo.png"),
+                      pageView(context, "assets/logos/mainlogo.png"),
+                      pageView(context, "assets/logos/mainlogo.png"),
+                    ],
+                  ),
+                  SizedBox(height: 16.h),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: [
+                        ExpandableHelper(
+                          expandText: data!.currentKm,
+                          path: "assets/logos/road.png",
+                          text: "Current KM",
+                          colorText: txtGreyShade,
+                          size: 16,
+                        ),
+                        const Divider(),
+                        ExpandableHelper(
+                          expandText: "₹ ${data.deposit}",
+                          path: "assets/logos/deposit.png",
+                          text: "Deposit",
+                          colorText: txtGreyShade,
+                          size: 16,
+                        ),
+                        const Divider(),
+                        ExpandableHelper(
+                          expandText: "₹ ${data.extraPerHour }",
+                          path: "assets/logos/save-money.png",
+                          text: "Extra Charges",
+                          colorText: txtGreyShade,
+                          size: 16,
+                        ),
+                        const Divider(),
+                        ExpandableHelper(
+                          expandText: data.reviews.toString(),
+                          path: "assets/logos/rating.png",
+                          text: "Reviews",
+                          colorText: txtGreyShade,
+                          size: 16,
+                        ),
+                        const Divider(),
+                        ExpandableHelper(
+                          expandText: data.nonFunctionalParts.toString(),
+                          path: "assets/logos/hanging.png",
+                          text: "Non-Functional Parts",
+                          colorText: txtGreyShade,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
-        ),
+            );
+          } else {
+            // Fallback case when snapshot.hasData is false
+            return Center(
+              child: styleText(
+                text: "Oops, no data available!",
+                txtColor: Colors.black,
+              ),
+            );
+          }
+        },
       ),
     );
   }
 
-  //multiple images showing ui
   Widget pageView(BuildContext context, String path) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 8.h),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
       child: Stack(
         children: [
           Container(
-            height: height(context: context, value: 0.3),
+            height: MediaQuery.of(context).size.height * 0.3,
             constraints: const BoxConstraints(
               minWidth: double.infinity,
             ),
@@ -133,7 +147,7 @@ class _MainScreenState extends State<MainScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(12.r),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: const [
                 BoxShadow(
                   color: Colors.black26,
@@ -144,7 +158,7 @@ class _MainScreenState extends State<MainScreen>
             ),
           ),
           Positioned(
-            bottom: 7.h,
+            bottom: 7,
             left: 0,
             right: 0,
             child: DotsIndicator(
@@ -153,30 +167,28 @@ class _MainScreenState extends State<MainScreen>
               decorator: DotsDecorator(
                 color: Colors.grey.shade400,
                 activeColor: Colors.white,
-                size: Size.square(5.sp),
-                activeSize: Size(18.sp, 8.sp),
+                size: const Size.square(5),
+                activeSize: const Size(18, 8),
                 activeShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.r),
+                  borderRadius: BorderRadius.circular(5),
                 ),
               ),
             ),
           ),
           Positioned(
-            bottom: 30.h,
+            bottom: 30,
             left: 0,
             right: 0,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12.r),
+              borderRadius: BorderRadius.circular(12),
               child: Image.asset(
                 path,
                 fit: BoxFit.cover,
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
-
-//need to change the review page and non fun parts as they are list......

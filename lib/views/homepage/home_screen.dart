@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:icons_plus/icons_plus.dart';
+import 'package:lottie/lottie.dart';
 import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
-import 'package:roll_eazy/views/homepage/vehicle_details_screen.dart';
+import 'package:roll_eazy/views/homepage/tabBarView.dart';
 import 'package:roll_eazy/views/landing_page/landing_page.dart';
-import 'package:roll_eazy/views/homepage/VehicleList.dart';
 import 'package:roll_eazy/views/profile_page/profile_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,9 +17,9 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
-
 
   void _onItemTapped(int index) {
     setState(() {
@@ -36,250 +35,110 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  final ScrollController _scrollController = ScrollController();
+  bool _isAppBarCollapsed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      bool isCollapsed = _scrollController.offset > 50.h;
+      if (_isAppBarCollapsed != isCollapsed) {
+        setState(() {
+          _isAppBarCollapsed = isCollapsed;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: height(context: context, value: 0.45),
-                width: width(context: context, value: 1),
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color(0xff233329),
-                        Color(0xff3B4A42),
-                        Color(0xff708871),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius:
-                        BorderRadius.only(bottomRight: Radius.circular(20)),
-                    color: Color(0xff708871)),
-                child: Stack(
-                  children: [
-                    Positioned(
-                        top: MediaQuery.of(context).size.height * 0.05,
-                        left: MediaQuery.of(context).size.width * 0.02,
-                        child: styleText(
-                            text: "Vehicle Rental",
-                            size: 28,
-                            weight: FontWeight.bold)),
-                    Positioned(
-                        top: MediaQuery.of(context).size.height * 0.03,
-                        left: 0,
-                        child: Image.asset(
-                          "assets/logos/homepage_logo.png",
-                          scale: 4.5,
-                        )),
-                    Positioned(
-                        left: MediaQuery.of(context).size.width * 0.02,
-                        top: MediaQuery.of(context).size.height * 0.4,
-                        child: styleText(text: "@Affordable Prices")),
-                  ],
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: height(context: context, value: 0.055),
-                        width: width(context: context, value: 0.8),
-                        decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xff233329),
-                                Color(0xff3B4A42),
-                                Color(0xff708871),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+        body: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverAppBar(
+              automaticallyImplyLeading: false,
+              expandedHeight: height(context: context, value: 0.42),
+              pinned: false,
+              floating: false,
+              flexibleSpace: _isAppBarCollapsed
+                  ? Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(12.r),
+                      )),
+                      child: Center(
+                        child: Padding(
+                            padding: const EdgeInsets.only(top: 30.0),
+                            child: Lottie.asset("assets/images/homepage.json",
+                                frameRate: const FrameRate(60),
+                                fit: BoxFit.cover)),
+                      ),
+                    )
+                  : FlexibleSpaceBar(
+                      background: Container(
+                        height: height(context: context, value: 0.42),
+                        width: width(context: context, value: 1),
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Color(0xff233329),
+                              Color(0xff3B4A42),
+                              Color(0xff708871),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(20)),
+                        ),
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: MediaQuery.of(context).size.height * 0.05,
+                              left: MediaQuery.of(context).size.width * 0.02,
+                              child: styleText(
+                                text: "Vehicle Rental",
+                                size: 28.sp,
+                                weight: FontWeight.bold,
+                              ),
                             ),
-                            color: const Color(0xff708871),
-                            borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(10.r),
-                                topLeft: Radius.circular(10.r))),
-                        child: Center(
-                            child: styleText(text: "Ranchi", size: 17.sp)),
+                            Positioned(
+                              top: MediaQuery.of(context).size.height * 0.03,
+                              left: 0,
+                              child: Image.asset(
+                                "assets/logos/homepage_logo.png",
+                                scale: 4.5,
+                              ),
+                            ),
+                            Positioned(
+                              left: MediaQuery.of(context).size.width * 0.02,
+                              top: MediaQuery.of(context).size.height * 0.4,
+                              child: styleText(text: "@Affordable Prices"),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    Expanded(
-                      child: Container(
-                        height: height(context: context, value: 0.055),
-                        width: width(context: context, value: 0.8),
-                        decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(10.r),
-                                bottomRight: Radius.circular(10.r))),
-                        child: Center(
-                            child: styleText(text: "Bengaluru", size: 17.sp)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      Card(
-                        elevation: 1,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.r)),
-                        child: Container(
-                          height: height(context: context, value: 0.2),
-                          width: width(context: context, value: 0.3),
-                          decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xff233329),
-                                  Color(0xff3B4A42),
-                                  Color(0xff708871),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(20.r),
-                              //if selected blue bg, white text, else white bg and black text
-                              color: const Color(0xff708871)),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset("assets/logos/porsche.png"),
-                              styleText(text: "Standard", size: 15.sp),
-                              styleText(text: "3000", size: 14.sp),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Card(
-                        elevation: 1,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.r)),
-                        child: Container(
-                          height: height(context: context, value: 0.2),
-                          width: width(context: context, value: 0.3),
-                          decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xff233329),
-                                  Color(0xff3B4A42),
-                                  Color(0xff708871),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(20.r),
-                              //if selected blue bg, white text, else white bg and black text
-                              color: const Color(0xff708871)),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset("assets/logos/porsche.png"),
-                              styleText(text: "SUV", size: 15.sp),
-                              styleText(text: "3000", size: 14.sp),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Card(
-                        elevation: 1,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.r)),
-                        child: Container(
-                          height: height(context: context, value: 0.2),
-                          width: width(context: context, value: 0.3),
-                          decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xff233329),
-                                  Color(0xff3B4A42),
-                                  Color(0xff708871),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(20.r),
-                              //if selected blue bg, white text, else white bg and black text
-                              color: const Color(0xff708871)),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset("assets/logos/porsche.png"),
-                              styleText(text: "Hatchback", size: 15.sp),
-                              styleText(text: "3000", size: 14.sp),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Card(
-                        elevation: 1,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.r)),
-                        child: Container(
-                          height: height(context: context, value: 0.2),
-                          width: width(context: context, value: 0.3),
-                          decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xff233329),
-                                  Color(0xff3B4A42),
-                                  Color(0xff708871),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(20.r),
-                              //if selected blue bg, white text, else white bg and black text
-                              color: greenTextColor),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset("assets/logos/porsche.png"),
-                              styleText(text: "Sedan", size: 15.sp),
-                              styleText(text: "3000", size: 14.sp),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: styleText(
-                    text: "Available vehicles",
-                    txtColor: greenTextColor,
-                    weight: FontWeight.w500),
-              ),
-              const VehicleList(),
-            ],
-          ),
+            ),
+            const SliverToBoxAdapter(child: HomePageToggle()),
+          ],
         ),
         bottomNavigationBar: Stack(
           clipBehavior: Clip.none,
           children: [
             BottomNavigationBar(
               unselectedLabelStyle: GoogleFonts.poppins(
-                  fontSize: 12, fontWeight: FontWeight.w500),
+                  fontSize: 12.sp, fontWeight: FontWeight.w500),
               selectedLabelStyle: GoogleFonts.poppins(
-                  fontSize: 14, fontWeight: FontWeight.bold),
+                  fontSize: 14.sp, fontWeight: FontWeight.bold),
               selectedItemColor: greenTextColor,
               currentIndex: _selectedIndex,
               onTap: _onItemTapped,

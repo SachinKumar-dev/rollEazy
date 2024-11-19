@@ -3,65 +3,64 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 
 class ApiServices extends GetxController {
   // Get the base URL from the .env file
-  static String get baseUrl => dotenv.env['USER_SERVER_URL']!;
-  static String get vehicleUrl => dotenv.env['VEHICLE_SERVER_URL']!;
+  static String get baseUrl => dotenv.env['SERVER_URL']!;
   //put multiple routes here and access as per route needs
 
   //Login
   String getLogInUrl() {
-    return '$baseUrl/logIn';
+    return '$baseUrl/api/v1/users/logIn';
   }
 
   //Register
   String getRegisterUrl() {
-    return '$baseUrl/register';
+    return '$baseUrl/api/v1/users/register';
   }
 
   //Send otp?
   String getSendOtpUrl() {
-    return '$baseUrl/sendVerification';
+    return '$baseUrl/api/v1/users/sendVerification';
   }
 
   //Reset password
   String getResetPasswordUrl() {
-    return '$baseUrl/resetPass';
+    return '$baseUrl/api/v1/users/resetPass';
   }
 
   //secureRoute
   String getSecureRoutedUrl() {
-    return '$baseUrl/secureRoute';
+    return '$baseUrl/api/v1/users/secureRoute';
   }
 
   //deleteAccount
   String getDeleteAccountRoutedUrl() {
-    return '$baseUrl/deleteAccount';
+    return '$baseUrl/api/v1/users/deleteAccount';
   }
 
   //verify email before registration
   String getEmailVerificationUrl() {
-    return '$baseUrl/VerifyOtpWhileRegistering';
+    return '$baseUrl/api/v1/users/VerifyOtpWhileRegistering';
   }
 
   //resend otp
   String getResendOTPUrl() {
-    return '$baseUrl/resendOtp';
+    return '$baseUrl/api/v1/users/resendOtp';
   }
 
   //updateDetails
   String getUpdateProfileUrl() {
-    return '$baseUrl/updateUserDetails';
+    return '$baseUrl/api/v1/users/updateUserDetails';
   }
 
   /*------------------------------------------------Vehicle Routes-----------------------------*/
 
   //get all vehicles
   String getAllVehicleUrl() {
-    return '$vehicleUrl/getAllVeichles';
+    return '$baseUrl/api/v1/veichle/getAllVeichles';
   }
 
   //get detailed vehicle data
   String getDetailedVehicleUrl() {
-    return '$vehicleUrl/getVeichle';
+    return '$baseUrl/api/v1/veichle/getVeichle';
   }
 
 
