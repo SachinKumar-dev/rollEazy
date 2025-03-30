@@ -11,15 +11,9 @@ import 'package:roll_eazy/controllers/vehicle_controller/vehicle_controller.dart
 import 'package:roll_eazy/services/api_services/api_services.dart';
 import 'package:roll_eazy/services/flutter_secure_token/flutter_secure_storage.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
-import 'package:roll_eazy/views/homepage/VehicleList.dart';
-import 'package:roll_eazy/views/homepage/dummyHomepage.dart';
-import 'package:roll_eazy/views/homepage/home_screen.dart';
-import 'package:roll_eazy/views/homepage/home_tab.dart';
-import 'package:roll_eazy/views/homepage/tabBarView.dart';
-import 'package:roll_eazy/views/homepage/vehicle_display.dart';
-import 'package:roll_eazy/views/reviews_page/review_mainpage.dart';
 import 'package:roll_eazy/views/splash_screen/splash_screen.dart';
-import 'views/reviews_page/review_page.dart';
+import 'controllers/review_controller/review_controller.dart';
+import 'controllers/ride_controller/ride_controller.dart';
 import 'controllers/user_form_ctrl/global_user.dart';
 
 Future<void> main() async {
@@ -28,7 +22,8 @@ Future<void> main() async {
   await GetStorage.init();
   await Get.put(AuthService()).isLoggedIn();
   Get.put(GlobalUserController());
-  //await Get.put(VehicleController().getAllVehicles());
+  Get.put(ReviewController());
+  Get.put(RideController());
   Get.put(VehicleController());
   Get.put(UserFormController());
   Get.put(ImageController());
@@ -51,12 +46,14 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: greenTextColor),
+            colorScheme: ColorScheme.fromSeed(seedColor: darkBlue),
             useMaterial3: true,
           ),
-          home: const ReviewMainpage(),
+          home: const SplashScreen(),
         );
       },
     );
   }
 }
+
+

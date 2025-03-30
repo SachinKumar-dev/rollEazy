@@ -7,17 +7,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart' hide MultipartFile, FormData;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:roll_eazy/controllers/review_controller/review_controller.dart';
 import 'package:roll_eazy/controllers/user_form_ctrl/global_user.dart';
 import 'package:roll_eazy/controllers/user_form_ctrl/image_ctrl.dart';
 import 'package:roll_eazy/services/api_services/api_services.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
-import 'package:roll_eazy/views/auth_pages/login_page/login_page.dart';
-import 'package:roll_eazy/views/auth_pages/registration_page/email_verification.dart';
-import 'package:roll_eazy/views/homepage/home_screen.dart';
+import 'package:roll_eazy/views/auth_pages/new_auth_pages/email_verification.dart';
+import 'package:roll_eazy/views/auth_pages/new_auth_pages/logIn_Screen.dart';
+import 'package:roll_eazy/views/homepage/HomePage.dart';
 import '../../models/user_model/user_model.dart';
-import '../../models/vehicle_model/vehicle_model.dart';
 import '../../services/flutter_secure_token/flutter_secure_storage.dart';
-import '../../views/auth_pages/registration_page/register_page.dart';
+import '../../views/auth_pages/new_auth_pages/register_Screen.dart';
 import '../../views/auth_pages/reset_password_page/otp_verification_screen.dart';
 import '../navigation_ctrl/nav_ctrl.dart';
 import '../vehicle_controller/vehicle_controller.dart';
@@ -26,6 +26,8 @@ class UserFormController extends GetxController {
   final url = Get.find<ApiServices>();
   final loggedInUser = Get.find<GlobalUserController>();
   final dio = Dio();
+
+  RxBool otpSent = false.obs;
 
   //isGuestUser
   Rx<bool> isGuest = false.obs;
@@ -90,9 +92,12 @@ class UserFormController extends GetxController {
       final response = await dio.post(registerUrl, data: formData);
 
       if (response.statusCode == 200) {
-        Get.back();
-        showSnackBar("Success!", "Registered successfully", greenTextColor);
-        print('User registered successfully: ${response.data}');
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
+        showSnackBar("Success!", "Registered successfully", Colors.white);
+        //print('User registered successfully: ${response.data}');
         otpSent.value = false;
         return true;
       }
@@ -104,33 +109,51 @@ class UserFormController extends GetxController {
         final message = e.response?.data['message'] ?? 'An error occurred';
 
         switch (statusCode) {
-          case 409: // Conflict - User already exists
+          case 409:
+            if (Get.isDialogOpen ?? false) {
+              Get.back();
+            }
+            Get.closeAllSnackbars();
             showSnackBar("Warning!", message, Colors.red);
-            print('User already exists. Status code: $statusCode');
+            //print('User already exists. Status code: $statusCode');
             break;
-          case 400: // Bad Request - Upload failed
+          case 400:
+            if (Get.isDialogOpen ?? false) {
+              Get.back();
+            }
+            Get.closeAllSnackbars();
             showSnackBar("Oops!",
                 "Failed to upload profileImage, try again later", Colors.red);
-            print('Upload failed. Status code: $statusCode');
+            //print('Upload failed. Status code: $statusCode');
             break;
-          case 500: // Server error
+          case 500:
+            if (Get.isDialogOpen ?? false) {
+              Get.back();
+            }
+            Get.closeAllSnackbars();
             showSnackBar(
                 "Oops!", "Something went wrong, try again later", Colors.red);
-            print('Server error. Status code: $statusCode');
+            //print('Server error. Status code: $statusCode');
             break;
-          default: // Handle unexpected errors
+          default:
+            if (Get.isDialogOpen ?? false) {
+              Get.back();
+            }
+            Get.closeAllSnackbars();
             showSnackBar("Error", "An unexpected error occurred", Colors.red);
-            print('Unexpected error. Status code: $statusCode');
+            //print('Unexpected error. Status code: $statusCode');
         }
       } else {
-        // Handle Dio errors where no response is returned (like timeout, network errors)
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         showSnackBar("Error", "Network error", Colors.red);
-        print('Dio error without response: ${e.message}');
+        //print('Dio error without response: ${e.message}');
       }
       return false;
     } catch (e) {
-      // Handle any other unexpected errors that are not caught by DioException
-      print('Unexpected error: $e');
+      //print('Unexpected error: $e');
       return false;
     }
   }
@@ -148,127 +171,173 @@ class UserFormController extends GetxController {
       );
       if (response.statusCode == 200) {
         String accessToken = response.data['data']['accessToken'];
+        String refreshToken = response.data['data']['user']['refreshToken'];
         //need to add data to get storage for caching
-        Get.find<SecureToken>().saveToken(accessToken);
+        Get.find<SecureToken>().saveAccessToken(accessToken);
+        Get.find<SecureToken>().saveRefreshToken(refreshToken);
         //provide data to model
         User user = User.fromJson(response.data['data']['user']);
-        print(user);
+        print(user.mobileNumber);
         //set global user
         Get.find<GlobalUserController>().setUser(user);
         update();
         await Get.find<VehicleController>().getAllVehicles();
-        Get.to(() => const HomePage(), transition: Transition.rightToLeft);
+        Get.find<GlobalUserController>().setNonGuest();
+        Get.find<UserFormController>().isGuest.value = false;
+        //print("from guest checking ${Get.find<UserFormController>().isGuest.value}");
+        await Get.find<AuthService>().login();
+        Get.find<ReviewController>().setCurrentRoute('/home');
+        // await Get.find<PushNotificationController>().sendFCMToken();
+        Get.to(() => const HomePage(),
+            routeName: '/home', transition: Transition.rightToLeft);
         return true;
       }
-      return false;
+
+        return false;
+
     } on DioException catch (e) {
       if (e.response != null) {
         print(e.response?.statusCode);
         switch (e.response?.statusCode) {
           case 401:
+            Get.closeAllSnackbars();
             showSnackBar("Warning!", "Invalid password", Colors.red);
             break;
           case 404:
+            Get.closeAllSnackbars();
             showSnackBar(
                 "Warning!", "User not found, register yourself", Colors.red);
             break;
           default:
+            Get.closeAllSnackbars();
             showSnackBar(
                 "Error!", "Something went wrong, try again later", Colors.red);
             break;
         }
-        print('Request failed with error: ${e.message}');
+        //print('Request failed with error: ${e.message}');
         return false;
       } else {
+        print('Dio error without response: ${e.message}');
+        Get.closeAllSnackbars();
         // Handle Dio errors where no response is returned (like timeout, network errors)
         showSnackBar("Error", "Network error", Colors.red);
-        print('Dio error without response: ${e.message}');
+        //print('Dio error without response: ${e.message}');
       }
       return false;
     } catch (e) {
+
       print("why me");
-      Get.back();
       print('Unexpected error: $e');
       return false;
     }
   }
 
-  RxBool otpSent = false.obs;
-
   //send otp during user registration
   Future<bool> sendRegistrationOTP(String otpType) async {
-    //need to check first the email format too
+    // Display a loading dialog
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
+
     final String sendOtpUrl = url.getSendOtpUrl();
+
     try {
-      if (verifyRegistrationEmail.text.trim().isNotEmpty) {
-        if (gmailRegex.hasMatch(verifyRegistrationEmail.text.trim())) {
-          final response = await dio.post(
-            sendOtpUrl,
-            data: {
-              'email': verifyRegistrationEmail.text.trim(),
-              'type': otpType
-            },
-          );
-          if (response.statusCode == 200) {
-            Get.back();
-            Get.find<ImageController>().snackBar(
-                "Success!", "Otp sent successfully",
-                txtColor: greenTextColor);
-            print("success otp sent");
-            otpSent.value = true;
-            return true;
-          }
-        } else {
-          showSnackBar("Warning!", "Invalid email format", Colors.red);
-          return false;
-        }
-      } else {
-        Get.back();
-        Get.find<ImageController>().snackBar(
-            "Warning!", "Email is mandatory to fill",
-            txtColor: Colors.red);
+      // Check if the email field is not empty
+      if (verifyRegistrationEmail.text.trim().isEmpty) {
+        _closeDialogAndShowSnackbar(
+          title: "Warning!",
+          message: "Email is mandatory to fill",
+          color: Colors.red,
+        );
         return false;
       }
-      return false;
+
+      // Validate email format
+      if (!gmailRegex.hasMatch(verifyRegistrationEmail.text.trim())) {
+        _closeDialogAndShowSnackbar(
+          title: "Warning!",
+          message: "Invalid email format",
+          color: Colors.red,
+        );
+        return false;
+      }
+
+      // Send OTP request
+      final response = await dio.post(
+        sendOtpUrl,
+        data: {
+          'email': verifyRegistrationEmail.text.trim(),
+          'type': otpType,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        _closeDialogAndShowSnackbar(
+          title: "Success!",
+          message: "OTP sent successfully",
+          color: Colors.white,
+        );
+        //print("success otp sent");
+        otpSent.value = true;
+        return true;
+      }
     } on DioException catch (e) {
+      // Handle Dio-specific exceptions
       if (e.response != null) {
-        print("inside otp sent error status code is ${e.response?.statusCode}");
-        var response = e.response?.statusCode;
-        var errorMessage = e.response?.data['message'];
-        print("errorMessage is $errorMessage");
-        if (response == 404) {
-          Get.back();
-          Get.find<ImageController>().snackBar(
-              "Oops!", "Error while sending the mail",
-              txtColor: Colors.red);
-          print("Error while sending the mail");
-          return false;
+        //print("Dio exception: ${e.response?.statusCode}, ${e.response?.data}");
+        if (e.response?.statusCode == 404) {
+          _closeDialogAndShowSnackbar(
+            title: "Oops!",
+            message: "Error while sending the mail",
+            color: Colors.red,
+          );
+        } else {
+          _closeDialogAndShowSnackbar(
+            title: "Error!",
+            message: e.response?.data['message'] ?? "Unexpected error",
+            color: Colors.red,
+          );
         }
       } else {
-        Get.find<ImageController>().snackBar(
-            "Network error!", "Please check internet access",
-            txtColor: Colors.red);
+        _closeDialogAndShowSnackbar(
+          title: "Network error!",
+          message: "Please check internet access",
+          color: Colors.red,
+        );
       }
-      return false;
     } catch (e) {
-      Get.back();
-      Get.find<ImageController>()
-          .snackBar("Oops!", "Something went wrong: $e", txtColor: Colors.red);
-      return false;
+      // Handle any other exceptions
+      _closeDialogAndShowSnackbar(
+        title: "Oops!",
+        message: "Something went wrong: $e",
+        color: Colors.red,
+      );
     }
+
+    return false;
+  }
+
+// Utility method for closing dialog and showing a snackbar
+  void _closeDialogAndShowSnackbar({
+    required String title,
+    required String message,
+    required Color color,
+  }) {
+    if (Get.isDialogOpen ?? false) {
+      Get.back();
+    }
+    Get.closeAllSnackbars();
+    Get.find<ImageController>().snackBar(title, message, txtColor: color);
   }
 
   //send otp during password reset
   Future<bool> sendResetOTP(String otpType) async {
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
@@ -280,10 +349,13 @@ class UserFormController extends GetxController {
           data: {'email': resetEmail.text.trim(), 'type': otpType},
         );
         if (response.statusCode == 200) {
-          Get.back();
+          if (Get.isDialogOpen ?? false) {
+            Get.back();
+          }
+          Get.closeAllSnackbars();
           Get.find<ImageController>().snackBar(
               "Success!", "Otp sent successfully",
-              txtColor: greenTextColor);
+              txtColor: Colors.white);
           Timer(const Duration(seconds: 2), () {
             Get.to(
                 () => OTPVerificationScreen(
@@ -291,11 +363,14 @@ class UserFormController extends GetxController {
                     ),
                 transition: Transition.rightToLeft);
           });
-          print("success otp sent");
+          //print("success otp sent");
           return true;
         }
       } else {
-        Get.back();
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Warning!", "Email is mandatory to fill",
             txtColor: Colors.red);
@@ -304,26 +379,35 @@ class UserFormController extends GetxController {
       return false;
     } on DioException catch (e) {
       if (e.response != null) {
-        print("inside otp sent error status code is ${e.response?.statusCode}");
+        //print("inside otp sent error status code is ${e.response?.statusCode}");
         var response = e.response?.statusCode;
-        var errorMessage = e.response?.data['message'];
-        print("errorMessage is $errorMessage");
+        //print("errorMessage is $errorMessage");
         if (response == 404) {
-          Get.back();
+          if (Get.isDialogOpen ?? false) {
+            Get.back();
+          }
+          Get.closeAllSnackbars();
           Get.find<ImageController>().snackBar(
               "Warning!", "User not registered",
               txtColor: Colors.red);
-          print("user not registered unable to sent mail");
+          //print("user not registered unable to sent mail");
           return false;
         }
       } else {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Network error!", "Please check internet access",
             txtColor: Colors.red);
       }
       return false;
     } catch (e) {
-      Get.back();
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
       Get.find<ImageController>()
           .snackBar("Oops!", "Something went wrong: $e", txtColor: Colors.red);
       return false;
@@ -334,7 +418,7 @@ class UserFormController extends GetxController {
   Future<void> resetPassword() async {
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
@@ -348,24 +432,33 @@ class UserFormController extends GetxController {
             "new_password": newPassword.text.trim()
           });
           if (response.statusCode == 200) {
-            Get.back();
+            if (Get.isDialogOpen ?? false) {
+              Get.back();
+            }
+            Get.closeAllSnackbars();
             Get.find<ImageController>().snackBar(
                 "Success!", "Password updated successfully",
-                txtColor: greenTextColor);
-            Get.offAll(() => const LogInPage());
+                txtColor: Colors.white);
+            Get.offAll(() => const LoginScreen());
             OTP.clear();
             newPassword.clear();
             resetEmail.clear();
-            print("success updated password");
+            //print("success updated password");
           }
         } else {
-          Get.back();
+          if (Get.isDialogOpen ?? false) {
+            Get.back();
+          }
+          Get.closeAllSnackbars();
           Get.find<ImageController>()
               .snackBar("Warning!", "Weak password", txtColor: Colors.red);
           return;
         }
       } else {
-        Get.back();
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Warning!", "Otp and New password are mandatory",
             txtColor: Colors.red);
@@ -373,25 +466,36 @@ class UserFormController extends GetxController {
       }
     } on DioException catch (exc) {
       var resStatus = exc.response?.statusCode;
-      print(resStatus);
+      //print(resStatus);
       if (exc.response != null && resStatus == 404) {
-        Get.back();
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>()
             .snackBar("Warning!", "Invalid otp entered", txtColor: Colors.red);
       } else if (exc.response != null && resStatus == 401) {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
-            "Oops!", "Otp expired, resend the otp",
+            "Oops!", "Otp expired,please resend the otp",
             txtColor: Colors.red);
-        Get.offAll(() => const LogInPage());
+        Get.offAll(() => const LoginScreen());
         resetEmail.clear();
       } else {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Network error!", "Please check internet access",
             txtColor: Colors.red);
       }
     } catch (error) {
       Get.back();
-      print("something went wrong! $error");
+      //print("something went wrong! $error");
     }
   }
 
@@ -399,43 +503,60 @@ class UserFormController extends GetxController {
   Future<void> verifyBeforeRegistration() async {
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
     final String emailVerify = url.getEmailVerificationUrl();
     try {
-      print(registrationOTP.text.trim());
+      //print(registrationOTP.text.trim());
       final response = await dio.post(emailVerify, data: {
         "email": verifyRegistrationEmail.text.trim(),
         "user_otp": registrationOTP.text.trim()
       });
 
       if (response.statusCode == 200) {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.snackbar("Success", "Email verified successfully!",
-            colorText: greenTextColor);
-        Get.offAll(() => const RegisterPage());
+            colorText: Colors.white,backgroundColor: darkBlue);
+        otpSent.value = false;
+        Get.offAll(() => const RegisterScreen());
       }
     } on DioException catch (exc) {
       var resStatus = exc.response?.statusCode;
-      print(resStatus);
       if (exc.response != null && resStatus == 404) {
-        print("invalid otp $resStatus");
-        Get.back();
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>()
             .snackBar("Warning!", "Invalid otp entered", txtColor: Colors.red);
       } else if (exc.response != null && resStatus == 401) {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Oops!", "Otp expired, resend the otp",
             txtColor: Colors.red);
       } else {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Network error!", "Please check internet access",
             txtColor: Colors.red);
       }
     } catch (error) {
-      Get.back();
-      print("something went wrong! $error");
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
+      //print("something went wrong! $error");
     }
   }
 
@@ -443,7 +564,7 @@ class UserFormController extends GetxController {
   Future<void> resendOtpOne() async {
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
@@ -455,29 +576,42 @@ class UserFormController extends GetxController {
         if (response.statusCode == 200) {
           Get.back();
           Get.snackbar("Success", "Otp sent successfully",
-              colorText: greenTextColor);
+              colorText: Colors.white, backgroundColor: darkBlue);
         }
       } else {
-        Get.back();
-        Get.snackbar("Warning!", "Email is required", colorText: Colors.red);
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
+        Get.snackbar("Warning!", "Email is required",
+            colorText: Colors.red, backgroundColor: darkBlue);
       }
     } on DioException catch (exc) {
       var resStatus = exc.response?.statusCode;
-      print(resStatus);
+      //print(resStatus);
       if (exc.response != null && resStatus == 404) {
-        Get.back();
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Oops!", "Unable to sent otp,try again later",
             txtColor: Colors.red);
       } else {
-        Get.back();
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Network error!", "Please check internet access",
             txtColor: Colors.red);
       }
     } catch (error) {
-      Get.back();
-      print("something went wrong! $error");
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
+      //print("something went wrong! $error");
     }
   }
 
@@ -485,7 +619,7 @@ class UserFormController extends GetxController {
   Future<void> resendOtpTwo() async {
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
@@ -496,79 +630,171 @@ class UserFormController extends GetxController {
             await dio.post(resendUrl, data: {"email": resetEmail.text.trim()});
 
         if (response.statusCode == 200) {
-          Get.back();
+          if (Get.isDialogOpen ?? false) {
+            Get.back();
+          }
+          Get.closeAllSnackbars();
           Get.snackbar("Success", "Otp sent successfully",
-              colorText: greenTextColor);
+              colorText: Colors.white, backgroundColor: darkBlue);
         }
       } else {
-        Get.back();
-        Get.snackbar("Warning!", "Email is required", colorText: Colors.red);
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
+        Get.snackbar("Warning!", "Email is required",
+            colorText: Colors.red, backgroundColor: darkBlue);
       }
     } on DioException catch (exc) {
       var resStatus = exc.response?.statusCode;
-      print(resStatus);
+      //print(resStatus);
       if (exc.response != null && resStatus == 404) {
-        Get.back();
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Oops!", "Unable to sent otp,try again later",
             txtColor: Colors.red);
       } else {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         Get.find<ImageController>().snackBar(
             "Network error!", "Please check internet access",
             txtColor: Colors.red);
       }
     } catch (error) {
-      Get.back();
-      print("something went wrong! $error");
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
+      //print("something went wrong! $error");
     }
   }
 
-  // Controller to log out the user
+
+  //log out fun
   Future<void> logOut() async {
-    print("inisde log out fun");
-    // Show loading dialog
     Get.dialog(
-      Center(
-        child: Lottie.asset('assets/images/loading.json'),
-      ),
+      Center(child: Lottie.asset('assets/images/loadingImg.json')),
       barrierDismissible: false,
     );
+
     String secureUrl = url.getSecureRoutedUrl();
-    final token = await Get.find<SecureToken>().getToken();
-    print('token is during logout $token');
+    String? token = await Get.find<SecureToken>().getToken();
+    print(token);
+
     try {
-      // Add the token to headers for authorization
+      final response = await sendRequestWithToken(secureUrl, token);
+
+      if (response.statusCode == 200) {
+        Get.find<AuthService>().logout();
+        await Get.find<SecureToken>().deleteToken();
+        Get.offAll(() => const LoginScreen());
+        return;
+      }
+
+      // Handle 404 error and attempt token refresh
+      if (response.statusCode == 404) {
+
+        bool refreshed = await refreshAccessToken();
+        if (refreshed) {
+
+          // Retry logout with new token
+          token = await Get.find<SecureToken>().getToken();
+          final retryResponse = await sendRequestWithToken(secureUrl, token);
+
+          if (retryResponse.statusCode == 200) {
+            Get.find<AuthService>().logout();
+            await Get.find<SecureToken>().deleteToken();
+            Get.offAll(() => const LoginScreen());
+          }
+        } else {
+          performLogout();
+        }
+      }
+    } on DioException catch (e) {
+      handleError(e);
+    } catch (error) {
+      print(error);
+    }
+  }
+
+
+  //Sends a request with the current token
+  Future sendRequestWithToken(String url, String? token) async {
+    return await dio.post(
+      url,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+        validateStatus: (status) {
+          return status != null;
+        },
+      ),
+    );
+  }
+
+
+  //Handles token refresh when access token is expired
+  Future<bool> refreshAccessToken() async {
+    String regenerateTokenUrl = url.getRegenerateTokenUrl();
+
+    try {
+      final refreshToken = await Get.find<SecureToken>().getRToken();
+
+      if (refreshToken == null) return false;
+
       final response = await dio.post(
-        secureUrl,
+        regenerateTokenUrl,
+        data: {"refreshToken": refreshToken},
         options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
+          validateStatus: (status) => status != null && status < 500,
         ),
       );
 
-      // First, check if the user is valid
+
       if (response.statusCode == 200) {
-        //we can call all logout  funs here
-        Get.find<AuthService>().logout();
-        await Get.find<SecureToken>().deleteToken();
-        Get.offAll(() => const LogInPage());
-      }
-    } on DioException catch (e) {
-      print("excpn");
-      // Handle specific status codes
-      if (e.response?.statusCode != null) {
-        if (e.response?.statusCode == 401) {
-          showSnackBar("Warning!", "Unauthorized user", Colors.red);
-          return;
+        if (response.data != null && response.data['data'] != null && response.data['data']['accessToken'] != null) {
+          String newAccessToken = response.data['data']['accessToken'];
+          await Get.find<SecureToken>().saveAccessToken(newAccessToken);
+          return true;
         }
-      } else {
-        showSnackBar("Oops!", "Network error", Colors.red);
-        return;
+      } else if (response.statusCode == 401 || response.statusCode == 403) {
+        performLogout();
+        return false;
       }
-    } catch (error) {
-      print("Something went wrong! $error");
+    } catch (e) {
+      return false;
     }
+    return false;
+  }
+
+  //Handles other errors
+  void handleError(DioException e) {
+    if (Get.isDialogOpen ?? false) {
+      Get.back();
+    }
+
+    if (e.response?.statusCode == 401) {
+      Get.closeAllSnackbars();
+      showSnackBar("Warning!", "Unauthorized user", Colors.red);
+    } else if (e.response?.statusCode == 407) {
+      performLogout();
+    } else {
+      Get.closeAllSnackbars();
+      showSnackBar("Oops!", "Network error", Colors.red);
+    }
+  }
+
+  //Handles user logout if refresh token is invalid or expired
+  Future<void> performLogout() async {
+    Get.find<AuthService>().logout();
+    await Get.find<SecureToken>().deleteToken();
+    Get.offAll(() => const LoginScreen());
   }
 
   //delete account
@@ -576,7 +802,7 @@ class UserFormController extends GetxController {
     //Show loading dialog
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
@@ -592,6 +818,7 @@ class UserFormController extends GetxController {
           headers: {
             'Authorization': 'Bearer $token',
           },
+          validateStatus: (status) => status != null && status < 500,
         ),
       );
 
@@ -599,31 +826,74 @@ class UserFormController extends GetxController {
       if (response.statusCode == 200) {
         // Navigate the user to the login page
         await Get.find<SecureToken>().deleteToken();
-        showSnackBar(
-            "Success!", "Account deleted successfully", greenTextColor);
-        Get.offAll(() => const LogInPage());
+        Get.find<GlobalUserController>().clearUser();
+        await Get.find<AuthService>().logout();
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
+        showSnackBar("Success!", "Account deleted successfully", Colors.white);
+        Get.offAll(() => const LoginScreen());
+      }
+      if (response.statusCode == 404) {
+        String? token = await Get.find<SecureToken>().getToken();
+        bool refreshed = await refreshAccessToken();
+        if (refreshed) {
+
+          // Retry deletion
+          token = await Get.find<SecureToken>().getToken();
+          final retryResponse = await dio.post(
+            deleteAccountUrl,
+            data: {"id": Get.find<GlobalUserController>().user.value?.id},
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer $token',
+              },
+            ),
+          );
+
+          if (retryResponse.statusCode == 200) {
+            Get.find<AuthService>().logout();
+            await Get.find<SecureToken>().deleteToken();
+            Get.offAll(() => const LoginScreen());
+          }
+        } else {
+          performLogout();
+        }
       }
     } on DioException catch (e) {
       // Handle specific status codes
       if (e.response?.statusCode != null) {
         if (e.response?.statusCode == 401) {
+          if (Get.isDialogOpen ?? false) {
+            Get.back();
+          }
+          Get.closeAllSnackbars();
           showSnackBar("Warning!", "Unauthorized user", Colors.red);
           return;
         }
       } else if (e.response?.statusCode == 404) {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         showSnackBar("Warning!", "User not found", Colors.red);
         return;
       } else {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         showSnackBar("Oops!", "Network error", Colors.red);
         return;
       }
     } catch (error) {
-      print("Something went wrong! $error");
+      //print("Something went wrong! $error");
     }
   }
 
   //show delete account dialog
-  void showDeleteConfirmationDialog() {
+  void showDeleteConfirmationDialog(BuildContext context) {
     Get.defaultDialog(
       title: "Delete Account!",
       titleStyle: GoogleFonts.poppins(
@@ -634,7 +904,7 @@ class UserFormController extends GetxController {
       textCancel: "No",
       textConfirm: "Yes",
       confirmTextColor: Colors.white,
-      onCancel: () => Get.back(),
+      onCancel: () => Navigator.of(context).pop(),
       onConfirm: () async {
         await deleteAccount();
       },
@@ -650,15 +920,27 @@ class UserFormController extends GetxController {
         dob.text.trim().isEmpty ||
         gender.text.trim().isEmpty ||
         license.text.trim().isEmpty) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
       Get.find<ImageController>().snackBar(
           "Warning!", "All fields are mandatory",
           txtColor: Colors.red);
     } else if (license.text.trim() == "No") {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
       Get.find<ImageController>().snackBar(
           "Warning!", "Driving license is mandatory",
           txtColor: Colors.red);
       return;
     } else if (isImageSelected == false) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
       Get.find<ImageController>().snackBar(
           "Warning!", "Please select profile image",
           txtColor: Colors.red);
@@ -672,7 +954,7 @@ class UserFormController extends GetxController {
   Future<void> registrationValidations() async {
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
@@ -680,19 +962,28 @@ class UserFormController extends GetxController {
     if (verifyRegistrationEmail.text.trim().isEmpty ||
         password.text.trim().isEmpty ||
         confirmPassword.text.trim().isEmpty) {
-      Get.back();
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
       Get.find<ImageController>().snackBar(
           "Warning!", "All fields are mandatory",
           txtColor: Colors.red);
     } else if (!gmailRegex.hasMatch(verifyRegistrationEmail.text.trim())) {
-      Get.back();
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
       Get.find<ImageController>()
           .snackBar("Warning!", "Invalid email format", txtColor: Colors.red);
     } else {
       bool isCorrect = checkPassword();
       if (isCorrect) {
         if (!(password.text.trim().length >= 6)) {
-          Get.back();
+          if (Get.isDialogOpen ?? false) {
+            Get.back();
+          }
+          Get.closeAllSnackbars();
           Get.find<ImageController>()
               .snackBar("Warning!", "Weak password", txtColor: Colors.red);
           return;
@@ -705,7 +996,7 @@ class UserFormController extends GetxController {
         // Check if registration was successful
         if (isRegistered) {
           // Navigate to login page on success
-          Get.to(() => const LogInPage(), transition: Transition.rightToLeft);
+          Get.to(() => const LoginScreen(), transition: Transition.rightToLeft);
 
           profileImage = null;
           final ImageController controller = Get.find();
@@ -720,10 +1011,13 @@ class UserFormController extends GetxController {
         }
       } catch (error) {
         // Always close the loading dialog in case of error
-        Get.back();
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         // Show error snackbar
         Get.snackbar('Error', 'Registration failed: $error',
-            colorText: Colors.red);
+            colorText: Colors.red,backgroundColor: darkBlue);
       }
     }
   }
@@ -732,44 +1026,66 @@ class UserFormController extends GetxController {
   Future<void> logInValidations() async {
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
+    // Input validation
     if (logEmail.text.trim().isEmpty || logPassword.text.trim().isEmpty) {
       HapticFeedback.lightImpact();
-      Get.back();
-      Get.find<ImageController>().snackBar(
-          "Warning!", "All fields are mandatory",
-          txtColor: Colors.red);
-    } else if (!gmailRegex.hasMatch(logEmail.text.trim())) {
-      Get.back();
-      Get.find<ImageController>()
-          .snackBar("Warning!", "Invalid email format", txtColor: Colors.red);
-    } else {
-      try {
-        // Wait for the registration to complete
-        bool isLogged = await loginUser();
-
-        if (isLogged) {
-          logEmail.clear();
-          logPassword.clear();
-        }
-      } catch (error) {
-        // Always close the loading dialog in case of error
+      if (Get.isDialogOpen ?? false) {
         Get.back();
-        // Show error snackbar
-        Get.snackbar('Error', 'LogIn failed: $error',
-            backgroundColor: Colors.red, colorText: Colors.white);
       }
+      Get.closeAllSnackbars();
+      Get.find<ImageController>().snackBar(
+        "Warning!",
+        "All fields are mandatory",
+        txtColor: Colors.red,
+      );
+      return;
+    }
+    if (!gmailRegex.hasMatch(logEmail.text.trim())) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
+      // Show the snackbar
+      Get.find<ImageController>().snackBar(
+        "Warning!",
+        "Invalid email format",
+        txtColor: Colors.red,
+      );
+      return;
+    }
+
+    try {
+      bool isLogged = await loginUser();
+      if (isLogged) {
+        logEmail.clear();
+        logPassword.clear();
+      }
+    } catch (error) {
+      if (Get.isDialogOpen == true) {
+        Get.back();
+        Get.closeAllSnackbars();
+      }
+      Get.snackbar(
+        'Error',
+        'LogIn failed: $error',
+        backgroundColor: darkBlue,
+        colorText: Colors.red,
+      );
     }
   }
 
   //password and confirmPassword validation
   bool checkPassword() {
     if (password.text.trim() != confirmPassword.text.trim()) {
-      Get.back();
-      Get.snackbar('Warning!', 'Password mismatched', colorText: Colors.red);
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
+      Get.snackbar('Warning!', 'Password mismatched', colorText: Colors.red,backgroundColor: darkBlue);
       return false;
     }
     return true;
@@ -804,7 +1120,7 @@ class UserFormController extends GetxController {
     // Show loading dialog
     Get.dialog(
       Center(
-        child: Lottie.asset('assets/images/loading.json'),
+        child: Lottie.asset('assets/images/loadingImg.json'),
       ),
       barrierDismissible: false,
     );
@@ -813,6 +1129,10 @@ class UserFormController extends GetxController {
       // Validate email format only if email field is not empty
       if (pEmail.text.trim().isNotEmpty &&
           !gmailRegex.hasMatch(pEmail.text.trim())) {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         showSnackBar("Warning!", "Invalid email format", Colors.red);
         return;
       }
@@ -837,11 +1157,15 @@ class UserFormController extends GetxController {
 
       // Handle successful response
       if (response.statusCode == 200) {
-        showSnackBar(
-            "Success!", "Details updated successfully", greenTextColor);
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
+        showSnackBar("Success!", "Details updated successfully", Colors.white);
         User user = User.fromJson(response.data['data']['user']);
         Get.find<GlobalUserController>().setUser(user);
-        Get.find<GlobalUserController>().updateUser((response.data['data']['user']));
+        Get.find<GlobalUserController>()
+            .updateUser((response.data['data']['user']));
         // Clear text fields after update
         pEmail.clear();
         pName.clear();
@@ -850,16 +1174,27 @@ class UserFormController extends GetxController {
     } on DioException catch (e) {
       if (e.response?.statusCode != null) {
         if (e.response?.statusCode == 401) {
-          print('if part m ${e.response?.statusCode}');
+          //print('if part m ${e.response?.statusCode}');
+          if (Get.isDialogOpen ?? false) {
+            Get.back();
+          }
+          Get.closeAllSnackbars();
           showSnackBar("Warning!", "Unauthorized user", Colors.red);
         }
-      }
-      else {
-        print('else part m ${e.response?.statusCode}');
+      } else {
+        //print('else part m ${e.response?.statusCode}');
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.closeAllSnackbars();
         showSnackBar("Oops!", "Network error", Colors.red);
       }
     } catch (error) {
-      print("Something went wrong! $error");
+      //print"Something went wrong! $error");
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.closeAllSnackbars();
       showSnackBar("Error", "Something went wrong!", Colors.red);
     }
   }

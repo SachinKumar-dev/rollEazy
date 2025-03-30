@@ -6,8 +6,18 @@ class SecureToken extends GetxController {
   final FlutterSecureStorage secStorage = const FlutterSecureStorage();
 
   //method to write token
-  Future<void> saveToken(String accessToken) async {
+  Future<void> saveAccessToken(String accessToken) async {
     await secStorage.write(key: "Access Token", value: accessToken);
+  }
+
+  //method to write token
+  Future<void> saveRefreshToken(String refreshToken) async {
+    await secStorage.write(key: "Refresh Token", value: refreshToken);
+  }
+
+  //method to read token
+  Future<String?> getRToken() async {
+    return await secStorage.read(key: "Refresh Token");
   }
 
   //method to read token

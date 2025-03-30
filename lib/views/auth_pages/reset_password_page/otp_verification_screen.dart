@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-
 import '../../../controllers/user_form_ctrl/user_form_ctrl.dart';
 import '../../../utility/color_helper/color_helper.dart';
 import '../../../utility/widget_helper/widget_helper.dart';
@@ -40,7 +39,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                         height: height(context: context, value: 0.07),
                       ),
                       Center(
-                          child: Lottie.asset("assets/images/emailSent.json",
+                          child: Lottie.asset("assets/images/authOtp.json",
                               repeat: false, height: 100.h)),
                       SizedBox(
                         height: height(context: context, value: 0.03),
@@ -72,13 +71,13 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             bottom: height(context: context, value: 0.02)),
                         child: OtpTextField(
                           alignment: Alignment.center,
-                          cursorColor: greenTextColor,
-                          enabledBorderColor: Colors.grey,
+                          cursorColor: darkBlue,
+                          enabledBorderColor: lightBlue,
                           contentPadding: EdgeInsets.all(10.h),
                           numberOfFields: 4,
                           borderRadius: BorderRadius.circular(10),
                           fieldHeight: 60.h,
-                          focusedBorderColor: greenTextColor,
+                          focusedBorderColor: darkBlue,
                           showFieldAsBox: true,
                           fieldWidth: 72.w,
                           textStyle:
@@ -97,7 +96,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                           children: [
                             styleText(
                                 text: "Password",
-                                txtColor: txtGreyShade,
+                                txtColor: darkBlue,
                                 size: 15.sp,
                                 weight: FontWeight.w500),
                             Container(
@@ -113,13 +112,13 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                     hintStyle: GoogleFonts.poppins(),
                                     enabledBorder: OutlineInputBorder(
                                         borderRadius:
-                                            BorderRadius.circular(10.r)),
+                                            BorderRadius.circular(8.r)),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
                                         width: 2,
-                                        color: greenTextColor,
+                                        color: darkBlue,
                                       ),
-                                      borderRadius: BorderRadius.circular(15.r),
+                                      borderRadius: BorderRadius.circular(10.r),
                                     )),
                               ),
                             )
@@ -136,7 +135,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             borderRadius: BorderRadius.circular(10.r),
                             boxShadow: [
                               BoxShadow(
-                                color: greenTextColor.withOpacity(0.5),
+                                color: darkBlue.withOpacity(0.5),
                                 spreadRadius: -25,
                                 // How much the shadow spreads
                                 blurRadius: 10,
@@ -148,7 +147,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                           child: ElevatedButton(
                               style: ButtonStyle(
                                   backgroundColor:
-                                      WidgetStateProperty.all(greenTextColor),
+                                      WidgetStateProperty.all(darkBlue),
                                   shape: WidgetStateProperty.all<
                                       RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
@@ -179,7 +178,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             children: [
                               styleText(
                                   text: "Resend OTP",
-                                  txtColor: greenTextColor,
+                                  txtColor: darkBlue,
                                   size: 18.sp,
                                   weight: FontWeight.w500),
                             ],

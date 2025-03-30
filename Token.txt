@@ -1,0 +1,12 @@
+We store env file with JWT sign keys to create the A.T and R.T with expiry times of the tokens not keys.
+We create A.T and R.T when user login but we will send only A.T to user and not R.T will store in DB for further token generation.
+
+In Flutter need to check always first if token==null or it may have the token but older one which is invalid since it will be expired so handle it first
+then get a new A.T then only hit any api by saving in local storage again,
+this will remove the 401 error of unauth. user.
+
+What if Refresh token itself got expired : Make user logut auto like after 10 days.
+When user again login a new refresh token and access token will be generated taken care by backend.
+Older R.T must be deleted and new one Saved in DB 
+
+

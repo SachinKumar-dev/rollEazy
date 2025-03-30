@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
 import '../../controllers/vehicle_controller/vehicle_controller.dart';
-
 class ExpandableHelper extends StatefulWidget {
   final String path;
   final String text;
@@ -14,18 +14,17 @@ class ExpandableHelper extends StatefulWidget {
 
   const ExpandableHelper(
       {super.key,
-      required this.path,
-      required this.expandText,
-      required this.size,
-      required this.colorText,
-      required this.text});
+        required this.path,
+        required this.expandText,
+        required this.size,
+        required this.colorText,
+        required this.text});
 
   @override
   State<ExpandableHelper> createState() => _APPState();
 }
 
 class _APPState extends State<ExpandableHelper> {
-
   final ExpandableController _controller = ExpandableController();
   final vehicleController = Get.find<VehicleController>();
 
@@ -37,7 +36,6 @@ class _APPState extends State<ExpandableHelper> {
         children: [
           GestureDetector(
               onTap: () {
-                // Toggle the expand/collapse state
                 setState(() {
                   _controller.toggle();
                 });
@@ -52,10 +50,8 @@ class _APPState extends State<ExpandableHelper> {
               )),
           Expandable(
             collapsed: Container(),
-            expanded: customContainer(
-                context:context,
-                text:widget.expandText
-                 ),
+            expanded:
+            customContainer(context: context, text: widget.expandText),
           ),
         ],
       ),
@@ -64,17 +60,13 @@ class _APPState extends State<ExpandableHelper> {
 }
 
 // Expanded content container
-Widget customContainer({required String text,required BuildContext context}) {
+Widget customContainer({required String text, required BuildContext context}) {
   return Container(
     width: double.infinity,
-    height: height(context: context,value: 0.1),
+    height: height(context: context, value: 0.1),
     decoration: BoxDecoration(
-      color: Colors.green[100],
+      color: lightBlue.withOpacity(0.7),
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(
-        color: Colors.green,
-        width: 1,
-      ),
     ),
     padding: const EdgeInsets.all(16),
     child: Column(
@@ -82,10 +74,8 @@ Widget customContainer({required String text,required BuildContext context}) {
       children: [
         Text(
           text,
-          style: TextStyle(fontSize: 16.sp),
+          style: TextStyle(fontSize: 15.sp,color: Colors.white),
         ),
-        // const SizedBox(height: 10),
-        // const Text("Add more content here if needed."),
       ],
     ),
   );
@@ -93,8 +83,8 @@ Widget customContainer({required String text,required BuildContext context}) {
 
 Widget _buildListTile(
     {required ExpandableController controller,
-    required String path,
-    required Widget title}) {
+      required String path,
+      required Widget title}) {
   return ListTile(
     leading: Image.asset(
       path,
@@ -103,14 +93,9 @@ Widget _buildListTile(
     title: title,
     trailing: Icon(
       controller.expanded
-          ? Icons.arrow_downward // Icon when expanded
-          : Icons.arrow_forward_ios, // Icon when collapsed
+          ? Icons.arrow_downward
+          : Icons.arrow_forward_ios,size: 16,
       color: Colors.red,
     ),
   );
 }
-
-//need to change the icon,spacing in whole ui
-//response  based text changes need to be done later
-// add google fonts of poppins too.....
-//check the expandable color once matching or not

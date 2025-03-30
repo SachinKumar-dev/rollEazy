@@ -6,7 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:roll_eazy/controllers/user_form_ctrl/user_form_ctrl.dart';
 import 'package:roll_eazy/utility/color_helper/color_helper.dart';
 import 'package:roll_eazy/utility/widget_helper/widget_helper.dart';
-import 'package:roll_eazy/views/auth_pages/login_page/login_page.dart';
+import 'package:roll_eazy/views/auth_pages/new_auth_pages/logIn_Screen.dart';
 
 class SendOTPScreen extends StatefulWidget {
   const SendOTPScreen({super.key});
@@ -40,7 +40,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                       ),
                       Center(
                           child: Lottie.asset(
-                              "assets/images/resetPassword.json",
+                              "assets/images/authOtp.json",
                               repeat: false,
                               height: 120.h)),
                       SizedBox(
@@ -67,7 +67,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                           children: [
                             styleText(
                                 text: "Email",
-                                txtColor: txtGreyShade,
+                                txtColor: darkBlue,
                                 size: 15.sp,
                                 weight: FontWeight.w500),
                             Container(
@@ -83,13 +83,15 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                     hintStyle: GoogleFonts.poppins(),
                                     enabledBorder: OutlineInputBorder(
                                         borderRadius:
-                                            BorderRadius.circular(10.r)),
+                                            BorderRadius.circular(8.r),borderSide: BorderSide(
+                                      color: lightBlue
+                                    )),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
                                         width: 2,
-                                        color: greenTextColor,
+                                        color: darkBlue,
                                       ),
-                                      borderRadius: BorderRadius.circular(15.r),
+                                      borderRadius: BorderRadius.circular(10.r),
                                     )),
                               ),
                             )
@@ -106,7 +108,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                             borderRadius: BorderRadius.circular(10.r),
                             boxShadow: [
                               BoxShadow(
-                                color: greenTextColor.withOpacity(0.5),
+                                color: darkBlue.withOpacity(0.5),
                                 spreadRadius: -25,
                                 // How much the shadow spreads
                                 blurRadius: 10,
@@ -118,7 +120,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                           child: ElevatedButton(
                               style: ButtonStyle(
                                   backgroundColor:
-                                      WidgetStateProperty.all(greenTextColor),
+                                      WidgetStateProperty.all(darkBlue),
                                   shape: WidgetStateProperty.all<
                                       RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
@@ -140,7 +142,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Get.off(() => const LogInPage(),
+                          Get.off(() => const LoginScreen(),
                               transition: Transition.rightToLeft);
                         },
                         child: Container(

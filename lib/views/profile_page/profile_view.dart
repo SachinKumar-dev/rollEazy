@@ -43,12 +43,12 @@ class _ProfileViewState extends State<ProfileView> {
           centerTitle: true,
           backgroundColor: Colors.white,
           title: styleText(
-              text: "Profile", txtColor: txtGreyShade, weight: FontWeight.w500),
+              text: "Profile", txtColor: Colors.black, weight: FontWeight.w500),
           leading: IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: const Icon(Icons.arrow_back_ios_new_rounded))),
+              icon:  Icon(Icons.arrow_back_ios_new_rounded,color: darkBlue,))),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
@@ -61,7 +61,7 @@ class _ProfileViewState extends State<ProfileView> {
               padding: EdgeInsets.only(
                   left: MediaQuery.of(context).size.width * 0.08, bottom: 3.h),
               child: styleText(
-                  text: "Name *", txtColor: greenTextColor, size: 15.sp),
+                  text: "Name *", txtColor: darkBlue, size: 15.sp),
             ),
             textFormField(context, ctrl.pName),
             SizedBox(
@@ -72,7 +72,7 @@ class _ProfileViewState extends State<ProfileView> {
                   left: MediaQuery.of(context).size.width * 0.08, bottom: 3.h),
               child: styleText(
                   text: "Mobile Number",
-                  txtColor: greenTextColor,
+                  txtColor: darkBlue,
                   size: 15.sp),
             ),
             textFormField(context, ctrl.pNumber,
@@ -84,7 +84,7 @@ class _ProfileViewState extends State<ProfileView> {
               padding: EdgeInsets.only(
                   left: MediaQuery.of(context).size.width * 0.08, bottom: 3.h),
               child: styleText(
-                  text: "Email *", txtColor: greenTextColor, size: 15.sp),
+                  text: "Email *", txtColor: darkBlue, size: 15.sp),
             ),
             textFormField(context, ctrl.pEmail),
             SizedBox(
@@ -94,7 +94,7 @@ class _ProfileViewState extends State<ProfileView> {
               padding: EdgeInsets.only(
                   left: MediaQuery.of(context).size.width * 0.08, bottom: 3.h),
               child: styleText(
-                  text: "DOB *", txtColor: greenTextColor, size: 15.sp,),
+                  text: "DOB *", txtColor: darkBlue, size: 15.sp,),
             ),
             textFormField(context, ctrl.pDOB,value: true,datePicker: ()async{
                 // Show date picker on tap
@@ -125,7 +125,7 @@ class _ProfileViewState extends State<ProfileView> {
                   () => ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(
-                        ctrl.isFiled.value ? greenTextColor : Colors.grey,
+                        ctrl.isFiled.value ? darkBlue : Colors.grey,
                       ),
                       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
@@ -158,7 +158,7 @@ class _ProfileViewState extends State<ProfileView> {
                   left: MediaQuery.of(context).size.width * 0.085),
               child: GestureDetector(
                 onTap: () {
-                  Get.find<UserFormController>().showDeleteConfirmationDialog();
+                  Get.find<UserFormController>().showDeleteConfirmationDialog(context);
                 },
                 child: styleText(
                     text: "Delete Account",
@@ -198,12 +198,12 @@ class _ProfileViewState extends State<ProfileView> {
           readOnly: value ?? false,
           controller: controller,
           maxLines: 1,
-          cursorColor: greenTextColor,
+          cursorColor: darkBlue,
           decoration: InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
               filled: true,
-              fillColor: const Color.fromARGB(255, 207, 223, 207),
+              fillColor: lightBlue.withOpacity(0.3),
               border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(10.r))),

@@ -1,4 +1,4 @@
-package com.example.roll_eazy
+package com.roll_eazy.app;
 
 import io.flutter.embedding.android.FlutterActivity
 

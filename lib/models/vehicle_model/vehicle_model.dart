@@ -7,10 +7,11 @@ class Vehicle {
   final int seater;
   final bool availability;
   final int pricePerHour;
-  final String gear;
-  final String fuel;
+  final String state;
+
 
   Vehicle({
+    required this.state,
     required this.coverImage,
     required this.id,
     required this.category,
@@ -19,8 +20,7 @@ class Vehicle {
     required this.seater,
     required this.availability,
     required this.pricePerHour,
-    required this.gear,
-    required this.fuel,
+
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
@@ -33,15 +33,14 @@ class Vehicle {
       seater: json['seater'],
       availability: json['availability'],
       pricePerHour: json['price_per_hr'],
-      gear: json['gear'],
-      fuel: json['fuel'],
+      state: json['state'],
     );
   }
 
   // Convert Vehicle object to JSON
   Map<String, dynamic> toJson() {
     return {
-      'cover_image':coverImage,
+      'cover_image': coverImage,
       '_id': id,
       'category': category,
       'vehicle_name': vehicleName,
@@ -49,73 +48,107 @@ class Vehicle {
       'seater': seater,
       'availability': availability,
       'price_per_hr': pricePerHour,
-      'gear': gear,
-      'fuel': fuel,
+      'state':state,
     };
   }
 }
 
-//detailed vehicle model
+//Manual Detailed Vehicle model
+class VehicleDetails {
+  final String currentKm;
+  final List<String> demoImages;
+  final int deposit;
+  final int extraPerHour;
+  final String gear;
+  final String primaryNum;
+  final String secondaryNum;
+  final String fuel;
+  final String pinCode;
+  final String city;
+  final List<Review> reviews;
+  final List<String> nonFunctionalParts;
 
-  class DetailedVehicle {
-    final int deposit;  // string
-    final String currentKm; // 3 KM or just 3 choose one also either String or Int make it common
-    final int extraPerHour; // string
-    final List<Review> reviews;
-    final List<String> demoImages;
-    final List<String> nonFunctionalParts;
-
-    DetailedVehicle({
+  VehicleDetails(
+      {required this.currentKm,
+        required this.gear,
+        required this.primaryNum,
+        required this.secondaryNum,
+        required this.fuel,
+      required this.pinCode,
+      required this.city,
+      required this.demoImages,
       required this.deposit,
-      required this.currentKm,
       required this.extraPerHour,
       required this.reviews,
-      required this.demoImages,
-      required this.nonFunctionalParts,
-    });
 
-    factory DetailedVehicle.fromJson(Map<String, dynamic> json) {
-      return DetailedVehicle(
-        deposit: json['deposit'],
-        currentKm:json['current_km'],
-        demoImages: List<String>.from(json['demo_images']),
-        extraPerHour: json['extra_per_hr'],
-        nonFunctionalParts: List<String>.from(json['non_functional_parts']),
-        reviews: (json['reviews'] as List?)!.map((item) => Review.fromJson(item)).toList()
-      );
-    }
+      required this.nonFunctionalParts});
+
+  //fromJson , it calls actual constructor so must ensure all required fields are passed or put if null then what value it should hold
+  factory VehicleDetails.fromJson(Map<String, dynamic> json) {
+    return VehicleDetails(
+        currentKm: json["current_km"],
+        //for type safety that returning one is an array of string only or else null and format error
+        demoImages:List<String>.from(json['demo_images']),
+        deposit: json["deposit"],
+        extraPerHour: json["extra_per_hr"],
+        gear: json['gear'],
+        fuel: json['fuel'],
+        primaryNum: json['primaryNum'],
+        secondaryNum: json['secondaryNum'],
+        reviews: (json['reviews'] as List?)!
+            .map((item) => Review.fromJson(item))
+            .toList(),
+        nonFunctionalParts: List<String>.from(json['non_functional_parts']), pinCode: json['city'], city: json['pincode']);
   }
 
-  //reviews model
-
-  class Review {
-    final DateTime? createdAt;
-    final DateTime? updatedAt;
-    final int starsCount;
-    final String feedback;
-    Review({
-      required this.createdAt,
-      required this.updatedAt,
-      required this.starsCount,
-      required this.feedback,
-    });
-
-    factory Review.fromJson(Map<String, dynamic> json) {
-      return Review(
-        createdAt: json['createdAt'],
-        updatedAt: json['updatedAt'],
-        starsCount: json['stars_count'],
-        feedback: json['feedback'],
-      );
-    }
-
-    // Convert Review object to JSON
-    Map<String, dynamic> toJson() {
-      return {
-        'createdAt':createdAt,
-        'updatedAt':updatedAt,
-        'stars_count': starsCount,
-        'feedback': feedback,
-      };
-    }
+  //toJson if need to send back some  data to server or local storage
+  //must return object/map/json in {}
+  Map<String, dynamic> toJson() {
+    return {
+      'current_km': currentKm,
+      'demo_images': demoImages,
+      'deposit': deposit,
+      'extra_per_hour': extraPerHour,
+      'reviews': reviews,
+      'city':city,
+      'primaryNum':primaryNum,
+      'secondaryNum':secondaryNum,
+      'gear': gear,
+      'fuel': fuel,
+      'pincode':pinCode,
+      'non_functional_parts': nonFunctionalParts
+    };
   }
+}
+
+class Review {
+  final DateTime? createdAt;
+  final int starsCount;
+  final String feedback;
+
+  Review({
+    required this.createdAt,
+    required this.starsCount,
+    required this.feedback,
+  });
+
+  factory Review.fromJson(Map<String, dynamic> json) {
+    return Review(
+      //parse String to date time
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
+      starsCount: json['stars_count'],
+      feedback: json['feedback'],
+    );
+  }
+
+  // Convert Review object to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'createdAt': createdAt,
+      'stars_count': starsCount,
+      'feedback': feedback,
+    };
+  }
+}

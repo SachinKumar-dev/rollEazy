@@ -1,17 +1,19 @@
 class User {
-  final String? id;
+  final String id;
   final String? userName;
   final String? email;
   final String? mobileNumber;
   final String? gender;
   final String? dob;
-  // int? totalTrips=0;
+  int totalTrips=0;
+  int ratings=0;
   final String? drivingLicense;
   final String? profileImage;
 
   User({
-    // this.totalTrips,
-    this.id,
+    required this.totalTrips,
+    required this.ratings,
+    required this.id,
     this.userName,
     this.email,
     this.mobileNumber,
@@ -24,7 +26,8 @@ class User {
   //making a json file for  caching
   Map<String, dynamic> toJson() => {
     '_id': id,
-    // 'total_trips':totalTrips,
+    'total_trips':totalTrips,
+    'customer_rating':ratings,
     'userName': userName,
     'email': email,
     'mobileNumber': mobileNumber,
@@ -38,7 +41,8 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['_id'] ?? '',
-      // totalTrips: json['total_trips'] ?? '',
+      totalTrips: json['total_trips'] ?? 0,
+      ratings: json['customer_rating'] ?? 0,
       userName: json['userName'] ?? '',
       email: json['email'] ?? '',
       mobileNumber: json['mobileNumber'] ?? '',

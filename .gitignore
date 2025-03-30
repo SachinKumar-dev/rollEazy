@@ -44,5 +44,5 @@ app.*.map.json
 
 #dont add these files
 issues.txt
-test.dart
+lib/views/reviews_page/review_page.dart
 .env

@@ -1,9 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:roll_eazy/views/homepage/vehicle_display.dart';
 import '../../controllers/vehicle_controller/vehicle_controller.dart';
-import '../../utility/color_helper/color_helper.dart';
 import '../../utility/widget_helper/widget_helper.dart';
 
 class HomeTab extends StatefulWidget {
@@ -15,11 +14,14 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   final vehicle = Get.find<VehicleController>().vehicleCache;
+  Rx<bool> isTapped = false.obs;
+  RxString selectedCategory = ''.obs;
 
   // Static list to show the category of vehicles
   List<Map<String, dynamic>> category = [
     {
-      "path": "assets/images/bike.png",
+      "path":
+          "https://res.cloudinary.com/darxov7ee/image/upload/v1738479889/Adobe_Express_-_file_1_ldpwoq.png",
       "categoryName": "Bike",
       "colorOne": const Color(0xff233329),
       "colorTwo": const Color(0xff3B4A42),
@@ -27,7 +29,8 @@ class _HomeTabState extends State<HomeTab> {
       "borderColor": Colors.white
     },
     {
-      "path": "assets/images/hatchback.png",
+      "path":
+          "https://res.cloudinary.com/darxov7ee/image/upload/v1738482592/Adobe_Express_-_file_6_1_edpdx2.png",
       "categoryName": "Hatchback",
       "colorOne": const Color(0xff233329),
       "colorTwo": const Color(0xff3B4A42),
@@ -35,7 +38,8 @@ class _HomeTabState extends State<HomeTab> {
       "borderColor": Colors.white
     },
     {
-      "path": "assets/images/mini.png",
+      "path":
+          "https://res.cloudinary.com/darxov7ee/image/upload/v1738480687/Adobe_Express_-_file_3_1_imglsx.png",
       "categoryName": "Mini",
       "colorOne": const Color(0xff233329),
       "colorTwo": const Color(0xff3B4A42),
@@ -43,7 +47,8 @@ class _HomeTabState extends State<HomeTab> {
       "borderColor": Colors.white
     },
     {
-      "path": "assets/images/sedan.png",
+      "path":
+          "https://res.cloudinary.com/darxov7ee/image/upload/v1732366360/file_3_ykkrnz.png",
       "categoryName": "Sedan",
       "colorOne": const Color(0xff233329),
       "colorTwo": const Color(0xff3B4A42),
@@ -51,7 +56,8 @@ class _HomeTabState extends State<HomeTab> {
       "borderColor": Colors.white
     },
     {
-      "path": "assets/images/suv.png",
+      "path":
+          "https://res.cloudinary.com/darxov7ee/image/upload/v1738480863/Adobe_Express_-_file_4_cozqcu.png",
       "categoryName": "Suv",
       "colorOne": const Color(0xff233329),
       "colorTwo": const Color(0xff3B4A42),
@@ -62,96 +68,57 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: height(context: context, value: 0.25),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: category.length,
-                itemBuilder: (BuildContext context, index) {
-                  return categoryWidget(
-                    path: category[index]['path'],
-                    categoryName: category[index]['categoryName'],
-                    colorOne: category[index]['colorOne'],
-                    colorTwo: category[index]['colorTwo'],
-                    colorThree: category[index]['colorThree'],
-                    borderColor: category[index]['borderColor'],
-                  );
-                },
-              ),
-            ),
-          ),
-
-          // Title for available vehicles
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: styleText(
-              text: "Available vehicles",
-              txtColor: greenTextColor,
-              weight: FontWeight.w500,
-            ),
-          ),
-
-          // Dynamically display vehicles or fallback to a "sorry" message
-          vehicle.isEmpty
-              ? sorryPage()
-              : const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: VehicleDisplay(),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: EdgeInsets.only(top: 5.h),
+      child: SizedBox(
+          height: height(context: context, value: 0.25),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: category.length,
+            itemBuilder: (BuildContext context, index) {
+              return categoryWidget(
+                path: category[index]['path'],
+                categoryName: category[index]['categoryName'],
+                isSelected:
+                    selectedCategory.value == category[index]['categoryName'],
+              );
+            },
+          )),
     );
   }
 
-  Widget categoryWidget({
-    required String path,
-    required categoryName,
-    required Color colorOne,
-    required Color colorTwo,
-    required Color colorThree,
-    required Color borderColor,
-  }) {
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-      child: Container(
-        height: height(context: context, value: 0.2),
-        width: width(context: context, value: 0.35),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [colorOne, colorTwo, colorThree],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          border: Border.all(color: borderColor, width: 1),
-          borderRadius: BorderRadius.circular(20.r),
-        ),
+  Widget categoryWidget(
+      {required String path, required categoryName, required bool isSelected}) {
+    return GestureDetector(
+      onTap: () {
+        isTapped.value = true;
+        selectedCategory.value = categoryName;
+        Get.find<VehicleController>().categoryName!.value = categoryName;
+        setState(() {});
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        height: isSelected ? 180.h : 150.h,
+        width: isSelected ? 180.w : 150.w,
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage("assets/images/categoryOne.png"))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              path,
+            CachedNetworkImage(
+              placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(
+                color: Colors.white,
+              )),
+              imageUrl: path,
               height: 100.h,
+              fit: BoxFit.contain,
             ),
-            styleText(text: categoryName, size: 15.sp),
+            styleText(text: categoryName, size: 15.sp, weight: FontWeight.w500),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget sorryPage() {
-    return Center(
-      child: styleText(
-        text: "Sorry no vehicles found!",
-        txtColor: Colors.black,
       ),
     );
   }

@@ -47,10 +47,26 @@ class GlobalUserController extends GetxController {
 
       user.value = User.fromJson(currentUser); // Update reactive user
       storage.write('user', jsonEncode(user.value!.toJson())); // Persist to storage
-      print("updated user is ${storage.read("user")}");
+      //print("updated user is ${storage.read("user")}");
     } else {
-      print("No user is currently logged in to update.");
+      //print("No user is currently logged in to update.");
     }
+  }
+
+  //set guest
+  void setGuestMode(){
+    storage.write("isGuest", true);
+  }
+
+  //get guest
+  bool getGuest(){
+   final guestLogin= storage.read("isGuest");
+   return guestLogin;
+  }
+
+  //set as non guest during login
+  void setNonGuest(){
+    storage.write("isGuest",false);
   }
 
 }
